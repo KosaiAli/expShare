@@ -1,4 +1,5 @@
 import 'package:expshare/screens/login_screen.dart';
+import 'package:expshare/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 
 import 'screens/welcome_screen.dart';
@@ -21,9 +22,11 @@ class MyApp extends StatelessWidget {
       home: const Scaffold(
         body: WelcomeScreen(),
       ),
+      debugShowCheckedModeBanner: false,
       routes: {
         LogInScreen.routeName: (ctx) => const LogInScreen(),
         WelcomeScreen.routeName: (ctx) => const WelcomeScreen(),
+        SignUpScreen.routeName: (ctx) => const SignUpScreen(),
       },
     );
   }
