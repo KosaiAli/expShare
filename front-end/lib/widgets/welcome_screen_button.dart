@@ -13,7 +13,7 @@ class WelcomeScreenButton extends StatelessWidget {
         horizontal: 50,
       ),
       child: GestureDetector(
-        onTap: () => onPressed(),
+        onTap: () => onPressed(context),
         child: Container(
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,

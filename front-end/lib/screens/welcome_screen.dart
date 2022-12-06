@@ -1,17 +1,18 @@
+import 'package:expshare/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
-import './constants.dart';
-import './widgets/welcome_item.dart';
-import './widgets/welcome_screen_button.dart';
+import '../constants.dart';
+import '../widgets/welcome_item.dart';
+import '../widgets/welcome_screen_button.dart';
 
-class WelcomePage extends StatefulWidget {
-  const WelcomePage({super.key});
-
+class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
+  static const routeName = '/WelcomeScreen';
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _WelcomePageState extends State<WelcomePage> {
+class _WelcomeScreenState extends State<WelcomeScreen> {
   int index = 0;
 
   List<Widget> indicators() {
@@ -30,9 +31,13 @@ class _WelcomePageState extends State<WelcomePage> {
     }).toList();
   }
 
-  void navigateToNext() {
-    pageController.nextPage(
-        duration: const Duration(milliseconds: 300), curve: Curves.linear);
+  void navigateToNext(BuildContext context) {
+    if (index < welcomeItem.length - 1) {
+      pageController.nextPage(
+          duration: const Duration(milliseconds: 300), curve: Curves.linear);
+    } else {
+      Navigator.pushReplacementNamed(context, LogInScreen.routeName);
+    }
   }
 
   final PageController pageController = PageController();

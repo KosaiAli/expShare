@@ -1,6 +1,7 @@
+import 'package:expshare/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
-import './welcome_page.dart';
+import 'screens/welcome_screen.dart';
 import './constants.dart';
 
 void main() {
@@ -18,8 +19,12 @@ class MyApp extends StatelessWidget {
         textTheme: const TextTheme().copyWith(titleLarge: kTitleLargStyle),
       ),
       home: const Scaffold(
-        body: WelcomePage(),
+        body: WelcomeScreen(),
       ),
+      routes: {
+        LogInScreen.routeName: (ctx) => const LogInScreen(),
+        WelcomeScreen.routeName: (ctx) => const WelcomeScreen(),
+      },
     );
   }
 }
