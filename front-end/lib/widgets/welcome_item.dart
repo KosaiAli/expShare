@@ -18,10 +18,13 @@ class WelcomeImage extends StatelessWidget {
         const SizedBox(
           height: 40,
         ),
-        Text(
-          title,
-          style: Theme.of(context).textTheme.titleLarge,
-          textAlign: TextAlign.center,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge,
+            textAlign: TextAlign.center,
+          ),
         )
       ],
     );

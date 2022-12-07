@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../constants.dart';
 import '../widgets/welcome_item.dart';
-import '../widgets/welcome_screen_button.dart';
+import 'welcome_screen_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});

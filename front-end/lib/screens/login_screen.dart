@@ -1,3 +1,4 @@
+import 'package:expshare/screens/tabs_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../constants.dart';
@@ -70,9 +71,17 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   bool _obsecure = true;
   String password = '';
+  final _form = GlobalKey<FormState>();
+
+  void _saveFrom() {
+    _form.currentState?.save();
+    Navigator.pushReplacementNamed(context, TabsScreen.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _form,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -121,7 +130,7 @@ class _LoginFormState extends State<LoginForm> {
             RawMaterialButton(
               constraints: const BoxConstraints.tightFor(
                   width: double.infinity, height: 60),
-              onPressed: () {},
+              onPressed: _saveFrom,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(35),
               ),
