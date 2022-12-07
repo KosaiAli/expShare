@@ -19,11 +19,7 @@ class ExpertsOverviewScreen extends StatelessWidget {
                 itemCount: expertsData.length,
                 itemBuilder: (ctx, index) {
                   final expertData = expertsData[index];
-                  return ExpertItem(
-                    image: expertData.image,
-                    name: '${expertData.firstName} ${expertData.lastName}',
-                    experienceCategory: expertData.experienceCategory,
-                  );
+                  return ExpertItem(id: expertData.id);
                 }),
           )
         ],

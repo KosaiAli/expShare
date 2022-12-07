@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/experts.dart';
+import '../screens/chat_screen.dart';
+import '../screens/expert_profile_screen.dart';
 
 class ExpertItem extends StatelessWidget {
-  final String image;
-  final String name;
-  final String experienceCategory;
-  const ExpertItem({
-    super.key,
-    required this.image,
-    required this.name,
-    required this.experienceCategory,
-  });
+  final String id;
+  const ExpertItem({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
+    final expertProvider = Provider.of<Experts>(context);
+    final expertData = expertProvider.getExpertById(id);
     return SizedBox(
       width: 125,
       height: 125,
@@ -29,7 +29,7 @@ class ExpertItem extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.asset(
-                  image,
+                  expertData.image,
                   fit: BoxFit.cover,
                   width: 100,
                   height: 100,
@@ -41,7 +41,7 @@ class ExpertItem extends StatelessWidget {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        name,
+                        "${expertData.firstName} ${expertData.lastName}",
                         style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -50,7 +50,7 @@ class ExpertItem extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      experienceCategory,
+                      expertData.experienceCategory,
                       style: const TextStyle(
                         color: Colors.grey,
                       ),
@@ -58,7 +58,13 @@ class ExpertItem extends StatelessWidget {
                     Row(
                       children: <Widget>[
                         iconButtonBuilder(context, () => {}, Icons.phone),
-                        iconButtonBuilder(context, () => {}, Icons.message),
+                        iconButtonBuilder(
+                            context,
+                            () => {
+                                  Navigator.pushNamed(
+                                      context, ChatScreen.routeName)
+                                },
+                            Icons.message),
                         const Text(
                           '4.6/5',
                           style: TextStyle(color: Colors.amber, fontSize: 16),
@@ -70,9 +76,21 @@ class ExpertItem extends StatelessWidget {
               ),
               Column(
                 children: [
-                  iconButtonBuilder(context, () => {}, Icons.favorite_border,
+                  iconButtonBuilder(context, () {
+                    expertProvider.toggleFavoriteStatusForSpecificExpert(id);
+                  },
+                      expertData.isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border,
                       size: 25),
-                  iconButtonBuilder(context, () => {}, Icons.person, size: 25),
+                  iconButtonBuilder(
+                      context,
+                      () => {
+                            Navigator.pushNamed(
+                                context, ExpertProfileScreen.routeName)
+                          },
+                      Icons.person,
+                      size: 25),
                 ],
               )
             ],

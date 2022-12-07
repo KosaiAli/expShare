@@ -1,3 +1,5 @@
+import 'package:expshare/screens/chat_screen.dart';
+import 'package:expshare/screens/expert_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 import './constants.dart';
@@ -34,6 +36,8 @@ class MyApp extends StatelessWidget {
         WelcomeScreen.routeName: (ctx) => const WelcomeScreen(),
         SignUpScreen.routeName: (ctx) => const SignUpScreen(),
         TabsScreen.routeName: (ctx) => const TabsScreen(),
+        ChatScreen.routeName: (ctx) => const ChatScreen(),
+        ExpertProfileScreen.routeName: (ctx) => const ExpertProfileScreen(),
       },
     );
   }

@@ -1,8 +1,6 @@
-// import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 
-import 'package:flutter/cupertino.dart';
-
-class Expert {
+class Expert with ChangeNotifier {
   final String id;
   final int age;
   final String firstName;
@@ -30,7 +28,7 @@ class Expert {
 class Experts with ChangeNotifier {
   final List<Expert> _experts = [
     Expert(
-      id: '1',
+      id: '0',
       age: 30,
       firstName: 'Ahmed',
       lastName: 'Ahmed',
@@ -41,7 +39,7 @@ class Experts with ChangeNotifier {
       gender: "male",
     ),
     Expert(
-      id: '2',
+      id: '1',
       age: 33,
       firstName: 'Sam',
       lastName: 'Sam',
@@ -63,7 +61,7 @@ class Experts with ChangeNotifier {
       gender: "male",
     ),
     Expert(
-      id: '2',
+      id: '3',
       age: 33,
       firstName: 'Khaled',
       lastName: 'Khaled',
@@ -74,7 +72,7 @@ class Experts with ChangeNotifier {
       gender: "male",
     ),
     Expert(
-      id: '2',
+      id: '4',
       age: 33,
       firstName: 'Lora',
       lastName: 'Lora',
@@ -85,7 +83,7 @@ class Experts with ChangeNotifier {
       gender: "male",
     ),
     Expert(
-      id: '2',
+      id: '5',
       age: 33,
       firstName: 'Aya',
       lastName: 'Aya',
@@ -96,7 +94,7 @@ class Experts with ChangeNotifier {
       gender: "male",
     ),
     Expert(
-      id: '2',
+      id: '6',
       age: 33,
       firstName: 'Reem',
       lastName: 'Reem',
@@ -110,5 +108,19 @@ class Experts with ChangeNotifier {
 
   List<Expert> get getAllExperts {
     return [..._experts];
+  }
+
+  List<Expert> get getFavoritedExperts {
+    return _experts.where((expert) => expert.isFavorite).toList();
+  }
+
+  Expert getExpertById(String id) {
+    return _experts.firstWhere((expert) => expert.id == id);
+  }
+
+  void toggleFavoriteStatusForSpecificExpert(String id) {
+    final expertIndex = _experts.indexWhere((expert) => expert.id == id);
+    _experts[expertIndex].isFavorite = !_experts[expertIndex].isFavorite;
+    notifyListeners();
   }
 }
