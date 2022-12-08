@@ -20,7 +20,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData.light().copyWith(
         primaryColor: kPrimaryColor,
-        textTheme: const TextTheme().copyWith(titleLarge: kTitleLargStyle),
+        textTheme: const TextTheme().copyWith(
+          titleLarge: kTitleLargStyle,
+        ),
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           titleTextStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),

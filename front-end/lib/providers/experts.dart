@@ -26,6 +26,14 @@ class Expert with ChangeNotifier {
 }
 
 class Experts with ChangeNotifier {
+  final List<String> catigories = [
+    'Medical',
+    'professional',
+    'Psychological',
+    'family',
+    'Business',
+  ];
+
   final List<Expert> _experts = [
     Expert(
       id: '0',
