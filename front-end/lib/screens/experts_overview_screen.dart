@@ -11,35 +11,61 @@ class ExpertsOverviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final expertsData = Provider.of<Experts>(context);
-    final experts = expertsData.getExperts;
+    final experts = expertsData.getFilteredExperts;
+    final categories = expertsData.categories;
 
     return Scaffold(
       appBar: SearchBar(forwardingSearchInput: expertsData.searchInput),
-      body: experts.isEmpty
-          ? const Padding(
-              padding: EdgeInsets.all(20),
-              child: Text(
-                'There is no Exert with this name or experience!',
-                style: TextStyle(color: Colors.black54, fontSize: 30),
-              ),
-            )
-          : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: experts.length,
-                        itemBuilder: (ctx, index) {
-                          final expertData = experts[index];
-                          return ExpertItem(id: expertData.id);
-                        }),
-                  )
-                ],
-              ),
+      body: Column(
+        children: [
+          categoryItemBuilder(categories, expertsData.selectCategory),
+          const SizedBox(height: 10),
+          experts.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Text(
+                    'There is no Exert with this name or experience!',
+                    style: TextStyle(color: Colors.black54, fontSize: 30),
+                  ),
+                )
+              : Expanded(
+                  child: ListView.builder(
+                      itemCount: experts.length,
+                      itemBuilder: (ctx, index) {
+                        final expertData = experts[index];
+                        return ExpertItem(id: expertData.id);
+                      }),
+                )
+        ],
+      ),
+    );
+  }
+
+  Widget categoryItemBuilder(List<String> categories, Function selectCategory) {
+    return SizedBox(
+      height: 55,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        itemBuilder: (context, index) => GestureDetector(
+          onTap: () {
+            selectCategory(index);
+          },
+          child: Container(
+            margin: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Theme.of(context).primaryColor,
             ),
+            alignment: Alignment.center,
+            child: Text(
+              categories[index],
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

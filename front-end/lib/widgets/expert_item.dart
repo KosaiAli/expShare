@@ -38,6 +38,7 @@ class ExpertItem extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.only(left: 10),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Expanded(
                       child: Text(
@@ -51,6 +52,7 @@ class ExpertItem extends StatelessWidget {
                     ),
                     Text(
                       expertData.experienceCategory,
+                      textAlign: TextAlign.left,
                       style: const TextStyle(
                         color: Colors.grey,
                       ),
@@ -85,15 +87,18 @@ class ExpertItem extends StatelessWidget {
                         ? Icons.favorite
                         : Icons.favorite_border,
                     size: 25,
+                    aligment: Alignment.topCenter,
                   ),
                   iconButtonBuilder(
-                      context,
-                      () => {
-                            Navigator.pushNamed(
-                                context, ExpertProfileScreen.routeName)
-                          },
-                      Icons.person,
-                      size: 25),
+                    context,
+                    () => {
+                      Navigator.pushNamed(
+                          context, ExpertProfileScreen.routeName)
+                    },
+                    Icons.person,
+                    size: 25,
+                    aligment: Alignment.center,
+                  ),
                 ],
               )
             ],
@@ -106,8 +111,10 @@ class ExpertItem extends StatelessWidget {
 
 Widget iconButtonBuilder(
     BuildContext context, VoidCallback onPressed, IconData icon,
-    {double size = 20.0}) {
+    {Alignment aligment = Alignment.centerLeft, double size = 20.0}) {
   return IconButton(
+    padding: const EdgeInsets.all(0),
+    alignment: aligment,
     onPressed: onPressed,
     icon: Icon(
       icon,

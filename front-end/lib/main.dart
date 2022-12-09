@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           centerTitle: true,
           titleTextStyle: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-          backgroundColor: Color(0xFF00677f),
+          backgroundColor: kPrimaryColor,
         ),
       ),
       home: const Scaffold(

@@ -37,15 +37,29 @@ class _SearchBarState extends State<SearchBar> {
   @override
   PreferredSizeWidget build(BuildContext context) {
     return AppBar(
+      centerTitle: !_searchMode,
       title: _searchMode ? _searchTextField() : const Text('EXPShare'),
       actions: [
-        IconButton(
-            icon: Icon(_searchMode ? Icons.clear : Icons.search),
-            onPressed: () {
+        WillPopScope(
+          onWillPop: () async {
+            if (_searchMode) {
               setState(() {
-                _searchMode = !_searchMode;
+                _searchMode = false;
               });
-            }),
+            } else {
+              return true;
+            }
+
+            return false;
+          },
+          child: IconButton(
+              icon: Icon(_searchMode ? Icons.clear : Icons.search),
+              onPressed: () {
+                setState(() {
+                  _searchMode = !_searchMode;
+                });
+              }),
+        ),
       ],
     );
   }

@@ -26,15 +26,19 @@ class Expert with ChangeNotifier {
 }
 
 class Experts with ChangeNotifier {
-  final List<String> catigories = [
+  final List<String> categories = [
+    'All',
     'Medical',
     'professional',
     'Psychological',
     'family',
     'Business',
+    'Computer Science',
+    'Artificial Intelligence',
   ];
 
   String _searchInput = '';
+  int _selectedCatergory = 0;
 
   final List<Expert> _experts = [
     Expert(
@@ -54,7 +58,7 @@ class Experts with ChangeNotifier {
       firstName: 'Sam',
       lastName: 'Sam',
       image: 'assets/illustrations/image1.jpg',
-      experienceCategory: 'Psychology medicine',
+      experienceCategory: 'Computer Science',
       phoneNumber: "+9639843212",
       experience: "i have worked for a Bonn Hospital for 10 years",
       gender: "male",
@@ -65,7 +69,7 @@ class Experts with ChangeNotifier {
       firstName: 'Yahya',
       lastName: 'Yahya',
       image: 'assets/illustrations/image2.jpg',
-      experienceCategory: 'Psychology medicine',
+      experienceCategory: 'Business',
       phoneNumber: "+9639843212",
       experience: "i have worked for a Bonn Hospital for 10 years",
       gender: "male",
@@ -76,7 +80,7 @@ class Experts with ChangeNotifier {
       firstName: 'Khaled',
       lastName: 'Khaled',
       image: 'assets/illustrations/image3.jpg',
-      experienceCategory: 'Psychology medicine',
+      experienceCategory: 'Artificial Intelligence',
       phoneNumber: "+9639843212",
       experience: "i have worked for a Bonn Hospital for 10 years",
       gender: "male",
@@ -87,7 +91,7 @@ class Experts with ChangeNotifier {
       firstName: 'Lora',
       lastName: 'Lora',
       image: 'assets/illustrations/image4.jpg',
-      experienceCategory: 'Psychology medicine',
+      experienceCategory: 'family',
       phoneNumber: "+9639843212",
       experience: "i have worked for a Bonn Hospital for 10 years",
       gender: "male",
@@ -98,7 +102,7 @@ class Experts with ChangeNotifier {
       firstName: 'Aya',
       lastName: 'Aya',
       image: 'assets/illustrations/image5.jpg',
-      experienceCategory: 'Psychology medicine',
+      experienceCategory: 'Artificial Intelligence',
       phoneNumber: "+9639843212",
       experience: "i have worked for a Bonn Hospital for 10 years",
       gender: "male",
@@ -109,26 +113,34 @@ class Experts with ChangeNotifier {
       firstName: 'Reem',
       lastName: 'Reem',
       image: 'assets/illustrations/image6.jpg',
-      experienceCategory: 'Psychology medicine',
+      experienceCategory: 'Medical',
       phoneNumber: "+9639843212",
       experience: "i have worked for a Bonn Hospital for 10 years",
       gender: "male",
     ),
   ];
 
-  List<Expert> get getExperts {
-    return [
+  List<Expert> get getFilteredExperts {
+    var filteredExperts = [
       ..._experts
-          .where(
-            (expert) =>
-                expert.firstName.toLowerCase().startsWith(_searchInput) ||
-                expert.lastName.toLowerCase().startsWith(_searchInput) ||
-                expert.experienceCategory
-                    .toLowerCase()
-                    .startsWith(_searchInput),
-          )
+          .where((expert) =>
+              _selectedCatergory == 0 ||
+              categories[_selectedCatergory] == expert.experienceCategory)
           .toList()
     ];
+    return [
+      ...filteredExperts
+          .where((expert) =>
+              expert.firstName.toLowerCase().startsWith(_searchInput) ||
+              expert.lastName.toLowerCase().startsWith(_searchInput) ||
+              expert.experienceCategory.toLowerCase().startsWith(_searchInput))
+          .toList()
+    ];
+  }
+
+  void selectCategory(int categoryIndex) {
+    _selectedCatergory = categoryIndex;
+    notifyListeners();
   }
 
   void searchInput(String value) {
