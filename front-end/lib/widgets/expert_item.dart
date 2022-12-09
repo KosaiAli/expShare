@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/experts.dart';
 import '../screens/chat_screen.dart';
+import '../screens/expert_profile_screen.dart';
 
 class ExpertItem extends StatelessWidget {
   final String id;
@@ -19,10 +20,11 @@ class ExpertItem extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        elevation: 4,
+        elevation: 5,
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -36,37 +38,26 @@ class ExpertItem extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.only(left: 10),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      "${expertData.firstName} ${expertData.lastName}",
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400,
-                        fontSize: 20,
+                    Expanded(
+                      child: Text(
+                        "${expertData.firstName} ${expertData.lastName}",
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 5,
                     ),
                     Text(
                       expertData.experienceCategory,
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                      style: const TextStyle(
+                        color: Colors.grey,
+                      ),
                     ),
-                    const Spacer(),
                     Row(
                       children: <Widget>[
-                        const Text(
-                          '4.6/5',
-                          style: TextStyle(color: Colors.amber, fontSize: 12),
-                        ),
-                        const SizedBox(
-                          width: 15,
-                        ),
                         iconButtonBuilder(context, () => {}, Icons.phone),
-                        const SizedBox(
-                          width: 15,
-                        ),
                         iconButtonBuilder(
                             context,
                             () => {
@@ -74,22 +65,35 @@ class ExpertItem extends StatelessWidget {
                                       context, ChatScreen.routeName)
                                 },
                             Icons.message),
+                        const Text(
+                          '4.6/5',
+                          style: TextStyle(color: Colors.amber, fontSize: 16),
+                        )
                       ],
                     ),
                   ],
                 ),
               ),
-              const Spacer(),
               Column(
                 children: [
-                  iconButtonBuilder(context, () {
-                    expertProvider.toggleFavoriteStatusForSpecificExpert(id);
-                  },
-                      expertData.isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      size: 24),
-                  const Spacer(),
+                  iconButtonBuilder(
+                    context,
+                    () {
+                      expertProvider.toggleFavoriteStatusForSpecificExpert(id);
+                    },
+                    expertData.isFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    size: 25,
+                  ),
+                  iconButtonBuilder(
+                      context,
+                      () => {
+                            Navigator.pushNamed(
+                                context, ExpertProfileScreen.routeName)
+                          },
+                      Icons.person,
+                      size: 25),
                 ],
               )
             ],
@@ -103,9 +107,9 @@ class ExpertItem extends StatelessWidget {
 Widget iconButtonBuilder(
     BuildContext context, VoidCallback onPressed, IconData icon,
     {double size = 20.0}) {
-  return GestureDetector(
-    onTap: onPressed,
-    child: Icon(
+  return IconButton(
+    onPressed: onPressed,
+    icon: Icon(
       icon,
       color: Theme.of(context).primaryColor,
       size: size,

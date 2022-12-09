@@ -34,6 +34,8 @@ class Experts with ChangeNotifier {
     'Business',
   ];
 
+  String _searchInput = '';
+
   final List<Expert> _experts = [
     Expert(
       id: '0',
@@ -114,8 +116,24 @@ class Experts with ChangeNotifier {
     ),
   ];
 
-  List<Expert> get getAllExperts {
-    return [..._experts];
+  List<Expert> get getExperts {
+    return [
+      ..._experts
+          .where(
+            (expert) =>
+                expert.firstName.toLowerCase().startsWith(_searchInput) ||
+                expert.lastName.toLowerCase().startsWith(_searchInput) ||
+                expert.experienceCategory
+                    .toLowerCase()
+                    .startsWith(_searchInput),
+          )
+          .toList()
+    ];
+  }
+
+  void searchInput(String value) {
+    _searchInput = value;
+    notifyListeners();
   }
 
   List<Expert> get getFavoritedExperts {

@@ -22,11 +22,19 @@ class _TabsScreenState extends State<TabsScreen> {
     _pages = [
       {
         'page': const ExpertsOverviewScreen(),
-        'title': 'Experts',
-        'icon': Icons.home
+        'label': 'Experts',
+        'icon': const Icon(Icons.home),
       },
-      {'page': const FavoritesScreen(), 'title': 'Chats', 'icon': Icons.chat},
-      {'page': const ChatsScreen(), 'title': 'Me', 'icon': Icons.person},
+      {
+        'page': const FavoritesScreen(),
+        'label': 'Favorites',
+        'icon': const Icon(Icons.favorite),
+      },
+      {
+        'page': const ChatsScreen(),
+        'label': 'Chats',
+        'icon': const Icon(Icons.chat),
+      },
     ];
     super.initState();
   }
@@ -48,72 +56,28 @@ class _TabsScreenState extends State<TabsScreen> {
         )
       ],
       child: Scaffold(
-        body: _pages[_selectedPageIndex]['page'] as Widget,
-        bottomNavigationBar: MyBottomBar(
-          pages: _pages,
-          onTap: _selectPage,
-          currentIndex: _selectedPageIndex,
-        ),
-      ),
-    );
-  }
-}
-
-class MyBottomBar extends StatelessWidget {
-  const MyBottomBar(
-      {Key? key,
-      required this.pages,
-      required this.onTap,
-      required this.currentIndex})
-      : super(key: key);
-
-  final List<Map<String, Object>> pages;
-  final Function(int)? onTap;
-  final int currentIndex;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            offset: const Offset(0, -3),
-            blurRadius: 15,
-            blurStyle: BlurStyle.outer,
-          ),
-        ],
-        borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(35), topRight: Radius.circular(35)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: pages.map((page) {
-          final index = pages.indexOf(page);
-
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                  onTap: () => onTap!(index),
-                  child: Icon(
-                    page['icon'] as IconData,
-                    color: currentIndex == index
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey,
-                  )),
-              Text(
-                page['title'] as String,
-                style: TextStyle(
-                    color: currentIndex == index
-                        ? Theme.of(context).primaryColor
-                        : Colors.grey,
-                    fontSize: 12),
+        appBar: _selectedPageIndex != 0
+            ? AppBar(
+                title: const Text('EXPShare'),
               )
-            ],
-          );
-        }).toList(),
+            : null,
+        body: _pages[_selectedPageIndex]['page'] as Widget,
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: _selectPage,
+          backgroundColor: Theme.of(context).primaryColor,
+          unselectedItemColor: Colors.white,
+          selectedItemColor: Theme.of(context).colorScheme.secondary,
+          currentIndex: _selectedPageIndex,
+          items: _pages
+              .map(
+                (page) => BottomNavigationBarItem(
+                  backgroundColor: Theme.of(context).primaryColor,
+                  icon: page['icon'] as Widget,
+                  label: page['label'].toString(),
+                ),
+              )
+              .toList(),
+        ),
       ),
     );
   }

@@ -1,12 +1,12 @@
-import 'package:expshare/screens/chat_screen.dart';
-import 'package:expshare/screens/expert_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 import './constants.dart';
 import './screens/login_screen.dart';
 import './screens/signup_screen.dart';
 import './screens/tabs_screen.dart';
-import 'screens/welcome_screen.dart';
+import './screens/welcome_screen.dart';
+import './screens/expert_profile_screen.dart';
+import './screens/chat_screen.dart';
 
 void main() {
   runApp(const MyApp());
