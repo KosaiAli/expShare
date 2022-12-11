@@ -127,7 +127,10 @@ class _SelectAppointmentState extends State<SelectAppointment> {
                 appointmentDataRow(
                     endDate == null || startDate == null
                         ? "0"
-                        : '${widget.price * (endDate!.difference(startDate!).inMinutes / 60)}',
+                        : (widget.price *
+                                (endDate!.difference(startDate!).inMinutes /
+                                    60))
+                            .toStringAsFixed(2),
                     'Total Cost'),
               ],
             ),

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/experts.dart';
 import '../widgets/about_me.dart';
 import '../widgets/select_appointment.dart';
+import '../widgets/expert_evaluation.dart';
 
 class ExpertProfileScreen extends StatefulWidget {
   static const routeName = "/ExpertProfileScreen";
@@ -86,7 +87,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen>
                         SelectAppointment(
                           price: expertData.price,
                         ),
-                        AboutMe(expertData: expertData),
+                        const ExpertEvaluation(),
                       ],
                     ),
                   )
