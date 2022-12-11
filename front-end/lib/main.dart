@@ -1,3 +1,6 @@
+import 'package:expshare/providers/experts.dart';
+import 'package:expshare/screens/fill_your_information.dart';
+import 'package:expshare/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import "package:provider/provider.dart";
 
@@ -8,7 +11,6 @@ import './screens/tabs_screen.dart';
 import './screens/welcome_screen.dart';
 import './screens/expert_profile_screen.dart';
 import './screens/chat_screen.dart';
-import './providers/experts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,12 +21,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (ctx) => Experts(),
-        )
-      ],
+    return ChangeNotifierProvider(
+      create: (context) => Experts(),
       child: MaterialApp(
         theme: ThemeData.light().copyWith(
           primaryColor: kPrimaryColor,
@@ -38,9 +36,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: kPrimaryColor,
           ),
         ),
-        home: const Scaffold(
-          body: WelcomeScreen(),
-        ),
+        home: const SplashScreen(),
         debugShowCheckedModeBanner: false,
         routes: {
           LogInScreen.routeName: (ctx) => const LogInScreen(),
@@ -49,6 +45,7 @@ class MyApp extends StatelessWidget {
           TabsScreen.routeName: (ctx) => const TabsScreen(),
           ChatScreen.routeName: (ctx) => const ChatScreen(),
           ExpertProfileScreen.routeName: (ctx) => const ExpertProfileScreen(),
+          FillYourInformation.routeName: (ctx) => const FillYourInformation()
         },
       ),
     );

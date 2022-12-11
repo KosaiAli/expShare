@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../screens/chats_screen.dart';
 import '../screens/experts_overview_screen.dart';
 import '../screens/favorites_screen.dart';
-import '../providers/experts.dart';
 
 class TabsScreen extends StatefulWidget {
   static const routeName = '/TabsScreen';

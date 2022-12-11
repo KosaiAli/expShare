@@ -44,43 +44,46 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    return Column(
-      children: [
-        SizedBox(
-          height: size.height * 0.70,
-          child: PageView(
-            physics: const NeverScrollableScrollPhysics(),
-            controller: pageController,
-            onPageChanged: (index) {
-              setState(
-                () => this.index = index,
-              );
-            },
-            children: welcomeItem.map(
-              (item) {
-                return WelcomeImage(
-                  index: item['index'] as int,
-                  title: item['title'] as String,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          SizedBox(
+            height: size.height * 0.70,
+            child: PageView(
+              physics: const NeverScrollableScrollPhysics(),
+              controller: pageController,
+              onPageChanged: (index) {
+                setState(
+                  () => this.index = index,
                 );
               },
-            ).toList(),
+              children: welcomeItem.map(
+                (item) {
+                  return WelcomeImage(
+                    index: item['index'] as int,
+                    title: item['title'] as String,
+                  );
+                },
+              ).toList(),
+            ),
           ),
-        ),
-        const SizedBox(
-          height: 30,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: indicators(),
-        ),
-        const SizedBox(
-          height: 30,
-        ),
-        WelcomeScreenButton(
-          onPressed: navigateToNext,
-          child: index == welcomeItem.length - 1 ? 'Get Started' : 'Next',
-        )
-      ],
+          const SizedBox(
+            height: 30,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: indicators(),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          WelcomeScreenButton(
+            onPressed: navigateToNext,
+            child: index == welcomeItem.length - 1 ? 'Get Started' : 'Next',
+          )
+        ],
+      ),
     );
   }
 }

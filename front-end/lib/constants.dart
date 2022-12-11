@@ -35,7 +35,6 @@ const kTitleSmallStyle = TextStyle(
   fontFamily: 'Cairo',
   fontSize: 19,
   color: Colors.black,
-  height: 1.3,
 );
 
 const kButtonStyle = TextStyle(
@@ -43,7 +42,6 @@ const kButtonStyle = TextStyle(
   fontSize: 20,
   fontWeight: FontWeight.w700,
   color: Colors.white,
-  height: 1.3,
 );
 const kPrimaryColor = Color(0xFF00677f);
 const kTextFieldColor = Color(0xFFE4E4ED);

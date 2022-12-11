@@ -1,8 +1,6 @@
-import 'package:expshare/screens/tabs_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../constants.dart';
-import './signup_screen.dart';
+import '../widgets/Forms/login_form.dart';
 
 class LogInScreen extends StatelessWidget {
   const LogInScreen({super.key});
@@ -11,135 +9,33 @@ class LogInScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/illustrations/logo.png',
-            height: 200,
-            width: 200,
-            fit: BoxFit.cover,
-          ),
-          Text(
-            'Login to Your Account',
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: Colors.black),
-          ),
-          const LoginForm(),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "Don't have an account?",
-                  style: TextStyle(color: Colors.grey),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacementNamed(
-                        context, SignUpScreen.routeName);
-                  },
-                  child: Text(
-                    '  Sign up',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class LoginForm extends StatefulWidget {
-  const LoginForm({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<LoginForm> createState() => _LoginFormState();
-}
-
-class _LoginFormState extends State<LoginForm> {
-  bool _obsecure = true;
-  String password = '';
-  final _form = GlobalKey<FormState>();
-
-  void _saveFrom() {
-    _form.currentState?.save();
-    Navigator.pushReplacementNamed(context, TabsScreen.routeName);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _form,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            TextFormField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none),
-                fillColor: const Color(0xFFE4E4ED),
-                filled: true,
-                hintText: 'Email',
-                prefixIcon: const Icon(Icons.email_rounded),
-              ),
-              style: const TextStyle(color: Colors.black),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              onChanged: (value) => setState(() {
-                password = value.trim();
-              }),
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide.none),
-                fillColor: const Color(0xFFE4E4ED),
-                filled: true,
-                hintText: 'Password',
-                prefixIcon: const Icon(
-                  Icons.lock,
-                ),
-                suffixIcon: password.isNotEmpty
-                    ? GestureDetector(
-                        onTap: () => setState(() {
-                              _obsecure = !_obsecure;
-                            }),
-                        child: Icon(_obsecure
-                            ? Icons.visibility_off
-                            : Icons.visibility))
-                    : null,
-              ),
-              obscureText: _obsecure,
-              style: const TextStyle(color: Colors.black),
-            ),
-            const SizedBox(height: 40),
-            RawMaterialButton(
-              constraints: const BoxConstraints.tightFor(
-                  width: double.infinity, height: 60),
-              onPressed: _saveFrom,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(35),
-              ),
-              fillColor: Theme.of(context).primaryColor,
-              child: const Text(
-                'Login',
-                style: kButtonStyle,
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 2.5,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Image.asset(
+                    'assets/illustrations/logo.png',
+                    height: 200,
+                    width: 200,
+                    fit: BoxFit.cover,
+                  ),
+                  Text(
+                    'Login to Your Account',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.black),
+                  ),
+                ],
               ),
             ),
+            SizedBox(
+                height: MediaQuery.of(context).size.height / 2,
+                child: const LoginForm()),
           ],
         ),
       ),
