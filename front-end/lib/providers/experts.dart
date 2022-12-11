@@ -2,27 +2,48 @@ import 'package:flutter/foundation.dart';
 
 class Expert with ChangeNotifier {
   final String id;
-  final int age;
   final String firstName;
   final String lastName;
   final String image;
   final String experienceCategory;
   final String phoneNumber;
   final String experience;
-  final String gender;
+  final String rate;
+  final String address;
+  final String email;
+  final double price;
   bool isFavorite = false;
 
   Expert({
     required this.id,
-    required this.age,
     required this.firstName,
     required this.lastName,
     required this.image,
     required this.experienceCategory,
     required this.phoneNumber,
     required this.experience,
-    required this.gender,
+    required this.rate,
+    required this.address,
+    required this.email,
+    required this.price,
   });
+
+  String get fullName {
+    return '$firstName $lastName';
+  }
+
+  Map<String, String> get expertMappedData {
+    return {
+      'Name': fullName,
+      'Speciality': experienceCategory,
+      'Phone Number': phoneNumber,
+      'Experience': experience,
+      'Rate': rate,
+      'Address': address,
+      'Email': email,
+      'Price Per Hour': '\$$price',
+    };
+  }
 }
 
 class Experts with ChangeNotifier {
@@ -43,80 +64,94 @@ class Experts with ChangeNotifier {
   final List<Expert> _experts = [
     Expert(
       id: '0',
-      age: 30,
       firstName: 'Ahmed',
       lastName: 'Ahmed',
       image: 'assets/illustrations/image.jpg',
       experienceCategory: 'Psychology medicine',
       phoneNumber: "+9639843212",
-      experience: "i have worked for a Bonn Hospital for 10 years",
-      gender: "male",
+      experience: "i have worked for a Big Hospital for 10 years",
+      rate: '4.5',
+      address: 'Germany',
+      email: 'myemail@gmail.com',
+      price: 5.9,
     ),
     Expert(
       id: '1',
-      age: 33,
       firstName: 'Sam',
       lastName: 'Sam',
       image: 'assets/illustrations/image1.jpg',
       experienceCategory: 'Computer Science',
       phoneNumber: "+9639843212",
-      experience: "i have worked for a Bonn Hospital for 10 years",
-      gender: "male",
+      experience: "i have worked for a Big Hospital for 10 years",
+      rate: '4.4',
+      address: 'Germany',
+      email: 'myemail@gmail.com',
+      price: 5.9,
     ),
     Expert(
       id: '2',
-      age: 33,
       firstName: 'Yahya',
       lastName: 'Yahya',
       image: 'assets/illustrations/image2.jpg',
       experienceCategory: 'Business',
       phoneNumber: "+9639843212",
-      experience: "i have worked for a Bonn Hospital for 10 years",
-      gender: "male",
+      experience: "i have worked for a Big Hospital for 10 years",
+      rate: '3.9',
+      address: 'Germany',
+      email: 'myemail@gmail.com',
+      price: 5.9,
     ),
     Expert(
       id: '3',
-      age: 33,
       firstName: 'Khaled',
       lastName: 'Khaled',
       image: 'assets/illustrations/image3.jpg',
       experienceCategory: 'Artificial Intelligence',
       phoneNumber: "+9639843212",
-      experience: "i have worked for a Bonn Hospital for 10 years",
-      gender: "male",
+      experience: "i have worked for a Big Hospital for 10 years",
+      rate: '3.5',
+      address: 'Germany',
+      email: 'myemail@gmail.com',
+      price: 5.9,
     ),
     Expert(
       id: '4',
-      age: 33,
       firstName: 'Lora',
       lastName: 'Lora',
       image: 'assets/illustrations/image4.jpg',
       experienceCategory: 'family',
       phoneNumber: "+9639843212",
-      experience: "i have worked for a Bonn Hospital for 10 years",
-      gender: "male",
+      experience: "i have worked for a Big Hospital for 10 years",
+      rate: '4.9',
+      address: 'Germany',
+      email: 'myemail@gmail.com',
+      price: 5.9,
     ),
     Expert(
       id: '5',
-      age: 33,
       firstName: 'Aya',
       lastName: 'Aya',
       image: 'assets/illustrations/image5.jpg',
       experienceCategory: 'Artificial Intelligence',
       phoneNumber: "+9639843212",
-      experience: "i have worked for a Bonn Hospital for 10 years",
-      gender: "male",
+      experience: "i have worked for a Big Hospital for 10 years",
+      rate: '4.0',
+      address: 'Germany',
+      email: 'myemail@gmail.com',
+      price: 5.9,
     ),
     Expert(
       id: '6',
-      age: 33,
       firstName: 'Reem',
       lastName: 'Reem',
       image: 'assets/illustrations/image6.jpg',
       experienceCategory: 'Medical',
       phoneNumber: "+9639843212",
-      experience: "i have worked for a Bonn Hospital for 10 years",
-      gender: "male",
+      experience: "i have worked for a Big Hospital for 10 years",
+      rate: '3.8',
+      address: 'Germany',
+      email: 'myemail@gmail.com',
+      price: 5.9,
     ),
   ];
 
@@ -145,7 +180,12 @@ class Experts with ChangeNotifier {
 
   void searchInput(String value) {
     _searchInput = value;
+    _selectedCatergory = 0;
     notifyListeners();
+  }
+
+  int get selectedCatergory {
+    return _selectedCatergory;
   }
 
   List<Expert> get getFavoritedExperts {

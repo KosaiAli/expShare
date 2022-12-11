@@ -93,7 +93,8 @@ class ExpertItem extends StatelessWidget {
                     context,
                     () => {
                       Navigator.pushNamed(
-                          context, ExpertProfileScreen.routeName)
+                          context, ExpertProfileScreen.routeName,
+                          arguments: id)
                     },
                     Icons.person,
                     size: 25,

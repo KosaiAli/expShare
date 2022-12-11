@@ -46,10 +46,12 @@ class _SearchBarState extends State<SearchBar> {
               setState(() {
                 _searchMode = false;
               });
+            }
+            if (!_searchMode) {
+              widget.forwardingSearchInput('');
             } else {
               return true;
             }
-
             return false;
           },
           child: IconButton(
@@ -57,6 +59,9 @@ class _SearchBarState extends State<SearchBar> {
               onPressed: () {
                 setState(() {
                   _searchMode = !_searchMode;
+                  if (!_searchMode) {
+                    widget.forwardingSearchInput('');
+                  }
                 });
               }),
         ),

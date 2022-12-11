@@ -18,7 +18,8 @@ class ExpertsOverviewScreen extends StatelessWidget {
       appBar: SearchBar(forwardingSearchInput: expertsData.searchInput),
       body: Column(
         children: [
-          categoryItemBuilder(categories, expertsData.selectCategory),
+          categoryItemBuilder(categories, expertsData.selectCategory,
+              expertsData.selectedCatergory),
           const SizedBox(height: 10),
           experts.isEmpty
               ? const Padding(
@@ -41,7 +42,8 @@ class ExpertsOverviewScreen extends StatelessWidget {
     );
   }
 
-  Widget categoryItemBuilder(List<String> categories, Function selectCategory) {
+  Widget categoryItemBuilder(
+      List<String> categories, Function selectCategory, int selectedCategory) {
     return SizedBox(
       height: 55,
       child: ListView.builder(
@@ -56,12 +58,20 @@ class ExpertsOverviewScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              color: Theme.of(context).primaryColor,
+              border: Border.all(color: Theme.of(context).primaryColor),
+              color: index == selectedCategory
+                  ? Theme.of(context).primaryColor
+                  : Colors.white,
             ),
             alignment: Alignment.center,
             child: Text(
               categories[index],
               textAlign: TextAlign.center,
+              style: TextStyle(
+                color: index == selectedCategory
+                    ? Colors.white
+                    : Theme.of(context).primaryColor,
+              ),
             ),
           ),
         ),
