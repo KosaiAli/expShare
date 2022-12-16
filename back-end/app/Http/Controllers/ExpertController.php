@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Expert;
+use App\Models\Speciality;
 use App\Models\Time;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -44,7 +45,15 @@ class ExpertController extends Controller
         return response()->json([
             "status" => true,
             "message" => "success",
-            "data" => json_encode(Expert::query()->get()),
+            "data" => Expert::query()->get(),
+        ]);
+    }
+    public function getAllSpecialties()
+    {
+        return response()->json([
+            "status" => true,
+            "message" => "success",
+            "data" => Speciality::query()->get(),
         ]);
     }
 

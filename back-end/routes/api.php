@@ -27,4 +27,5 @@ Route::group(["middleware" => ["auth:api"]], function(){
     Route::post("logout", [AuthController::class, "logout"]);
     Route::post("expertData", [ExpertController::class, "expertData"]);
     Route::get("getAllExperts", [ExpertController::class, "getAllExperts"]);
+    Route::get("getAllSpecialties", [ExpertController::class, "getAllSpecialties"]);
 });
