@@ -19,6 +19,7 @@ class Expert extends Model
         'address',
         'details',
         'price',
+        'birthday',
     ];
     public function user(): BelongsTo
     {

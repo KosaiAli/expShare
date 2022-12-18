@@ -22,7 +22,7 @@ return new class extends Migration
             $table->time('start');
             $table->time('end');
             $table->date('day');
-            $table->boolean('available');
+            $table->boolean('available')->default(1);
             $table->timestamps();
         });
     }

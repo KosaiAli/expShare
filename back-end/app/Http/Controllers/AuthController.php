@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Expert;
+use App\Models\Speciality;
 use App\Models\Time;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -60,6 +61,30 @@ class AuthController extends Controller
         ]);
     }
 
+    public function addAppointment(Request $request)
+    {
+        $user_data = auth()->user();
+        $validatedData = $request->validate([
+            'expert_id' => 'required',
+            'user_id' => 'nullable',
+            'time_id' => 'required'
+        ]);
+        $validatedData1=request (['expert_id','user_id','time_id']);
+        $validatedData1['user_id']=$user_data ['id'];
+        $user = User::query()->find($validatedData1['user_id']);
+        $expert = Expert::query()->find($validatedData1['expert_id']);
+        $expert_user = User::query()->find($expert['user_id']);
+        $time = Time::query()->find($validatedData1['time_id']);
+        $time->update([
+            'available' => '0', ]);
+        $expert_user->update([
+            'balance' => $expert_user['balance']+$expert['price'], ]);
+        $user->update([
+            'balance' => $user['balance']-$expert['price'], ]);
+        $appointment = Appointment::create($validatedData1);
+        return response(['appointment' => $appointment]);
+
+    }
 
 
 

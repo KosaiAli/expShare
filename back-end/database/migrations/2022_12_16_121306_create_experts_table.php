@@ -23,11 +23,12 @@ return new class extends Migration
                 ->constrained('specialties')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->text('imageUrl');
+            $table->longText('imageUrl');
             $table->integer('phoneNum');
             $table->text('address');
             $table->text('details');
             $table->double('price');
+            $table->date('birthday');
             $table->timestamps();
         });
     }
