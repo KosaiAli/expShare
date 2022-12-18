@@ -32,4 +32,6 @@ Route::group(["middleware" => ["auth:api"]], function () {
     Route::get("getAvailableTimes", [ExpertController::class, "getAvailableTimes"]);
     Route::get("getAppointment", [ExpertController::class, "getAppointment"]);
     Route::get("getExpert", [ExpertController::class, "getExpert"]);
+    Route::post("AddToFavorite", [AuthController::class, "AddToFavorite"]);
+    Route::get("userProfile", [AuthController::class, "userProfile"]);
 });

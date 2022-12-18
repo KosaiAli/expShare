@@ -37,21 +37,40 @@ class ExpertController extends Controller
 
     public function getAllExperts()
     {
+        $cases=Expert::query()->get();
+        $userCases=array();
+        for ($i=0;$i<count($cases);$i++) {
+            $case=$cases[$i];
+            $user=User::query()->where('id','like',$case->user_id)->first();
+            $case['name']=$user['name'];
+            $case['email']=$user['email'];
+            array_push($userCases,$case);
+        }
         return response()->json([
             "status" => true,
             "message" => "success",
-            "data" => Expert::query()->get(),
+            "data" => $userCases,
         ]);
     }
     public function getExpert(Request $request)
     {
         $validatedData = $request->validate([
             'expertId' => 'required',]);
+        $cases=Expert::query()->where('id','like',$validatedData['expertId'])->get();
+        $userCases=array();
+        for ($i=0;$i<count($cases);$i++) {
+            $case=$cases[$i];
+            $user=User::query()->where('id','like',$case->user_id)->first();
+            $case['name']=$user['name'];
+            $case['email']=$user['email'];
+            array_push($userCases,$case);
+        }
         return response()->json([
             "status" => true,
             "message" => "success",
-            "data" => Expert::query()->where('id','like',$validatedData['expertId'])->get(),
+            "data" => $userCases,
         ]);
+
     }
     public function getAllSpecialties()
     {
