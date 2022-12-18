@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Expert;
+use App\Models\Favorite;
 use App\Models\Speciality;
 use App\Models\Time;
 use App\Models\User;
@@ -82,9 +83,39 @@ class AuthController extends Controller
         $user->update([
             'balance' => $user['balance']-$expert['price'], ]);
         $appointment = Appointment::create($validatedData1);
+        //
+        //$time=['']
+        //$newTime = Time::create($nextTime);
         return response(['appointment' => $appointment]);
 
     }
+
+    public function AddToFavorite(Request $request)
+    {
+        $user_data = auth()->user();
+        $validatedData = $request->validate([
+            'expert_id' => 'required',
+            'user_id' => 'nullable'
+        ]);
+        $validatedData1=request (['expert_id','user_id']);
+        $validatedData1['user_id']=$user_data ['id'];
+        $favorite = Favorite::create($validatedData1);
+        return response(['favorite' => $favorite]);
+
+    }
+
+    public function userProfile()
+    {
+        $user_data = auth()->user();
+        $favorite=Favorite::query()->where('user_id','like',$user_data['id'])->get();
+        return response()->json([
+            "status" => true,
+            "message" => "User data",
+            "data" => $user_data,
+            "favorite" => $favorite,
+        ]);
+    }
+
 
 
 
