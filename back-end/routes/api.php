@@ -21,11 +21,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post('register', [AuthController::class, "register"]);
 Route::post('login', [AuthController::class, "login"]);
+Route::get("getAllSpecialties", [ExpertController::class, "getAllSpecialties"]);
 
 Route::group(["middleware" => ["auth:api"]], function(){
 
     Route::post("logout", [AuthController::class, "logout"]);
     Route::post("expertData", [ExpertController::class, "expertData"]);
     Route::get("getAllExperts", [ExpertController::class, "getAllExperts"]);
-    Route::get("getAllSpecialties", [ExpertController::class, "getAllSpecialties"]);
 });

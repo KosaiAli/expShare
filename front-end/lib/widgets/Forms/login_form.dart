@@ -1,8 +1,13 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
 import '../../screens/tabs_screen.dart';
 import '../../screens/signup_screen.dart';
 import '../../constants.dart';
+import '../../configuration/config.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({
@@ -16,19 +21,16 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   bool _obsecure = true;
   String password = '';
+  final TextEditingController emailController = TextEditingController();
   final _form = GlobalKey<FormState>();
-
-  void _saveFrom() {
-    if (_form.currentState!.validate()) {
-      Navigator.pushReplacementNamed(context, TabsScreen.routeName);
-    }
-  }
 
   TextFormField createTextForm(
       {required String hintText,
       String? Function(String?)? validator,
+      required TextEditingController controller,
       Widget? prefix}) {
     return TextFormField(
+        controller: controller,
         decoration: InputDecoration(
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
@@ -42,7 +44,61 @@ class _LoginFormState extends State<LoginForm> {
         validator: validator);
   }
 
-  bool isExpert = false;
+  Future<void> _login() async {
+    var url = Uri.http(Config.host, 'api/login');
+    try {
+      var resposne = await http
+          .post(url,
+              headers: Config.requestHeaders,
+              body: jsonEncode(
+                  {'email': emailController.text.trim(), 'password': password}))
+          .timeout(const Duration(seconds: 15));
+      var decodedData = jsonDecode(resposne.body);
+      if (decodedData['message'] != null) {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            content: Text(
+              decodedData['message'],
+              style: const TextStyle(color: Colors.black),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child:
+                      const Text('OK!', style: TextStyle(color: Colors.blue)))
+            ],
+          ),
+        );
+        return;
+      }
+      FlutterSecureStorage storage = const FlutterSecureStorage();
+      await storage
+          .write(key: 'access_token', value: decodedData['access_token'])
+          .then((_) =>
+              Navigator.pushReplacementNamed(context, TabsScreen.routeName));
+    } on TimeoutException catch (_) {
+      showDialog(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              content: const Text(
+                'Request time out, \ncheck your connection!',
+                style: TextStyle(color: Colors.black),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'OK!',
+                      style: TextStyle(color: Colors.blue),
+                    ))
+              ],
+            );
+          });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -53,6 +109,7 @@ class _LoginFormState extends State<LoginForm> {
           child: Column(
             children: [
               createTextForm(
+                  controller: emailController,
                   hintText: 'Email',
                   prefix: const Icon(Icons.email_rounded),
                   validator: ((value) {
@@ -104,25 +161,11 @@ class _LoginFormState extends State<LoginForm> {
                   return null;
                 },
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Checkbox(
-                    value: isExpert,
-                    onChanged: (value) => setState(() => isExpert = !isExpert),
-                  ),
-                  Text(
-                    'Login as expert',
-                    style: kButtonStyle.copyWith(
-                        color: Colors.black, fontSize: 16),
-                  )
-                ],
-              ),
               const SizedBox(height: 20),
               RawMaterialButton(
                 constraints: const BoxConstraints.tightFor(
                     width: double.infinity, height: 60),
-                onPressed: _saveFrom,
+                onPressed: _login,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(35),
                 ),

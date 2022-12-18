@@ -1,4 +1,6 @@
+import 'package:expshare/providers/experts.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/chats_screen.dart';
 import '../screens/experts_overview_screen.dart';
@@ -14,12 +16,33 @@ class TabsScreen extends StatefulWidget {
 
 class _TabsScreenState extends State<TabsScreen> {
   List<Map<String, Object>> _pages = [];
-
+  bool loading = true;
   @override
   void initState() {
+    Provider.of<Experts>(context, listen: false).getAllExperts().then((value) {
+      setState(() {
+        loading = false;
+      });
+    });
+
+    super.initState();
+  }
+
+  int _selectedPageIndex = 0;
+
+  void _selectPage(int index) {
+    setState(() {
+      _selectedPageIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     _pages = [
       {
-        'page': const ExpertsOverviewScreen(),
+        'page': !loading
+            ? const ExpertsOverviewScreen()
+            : const Center(child: CircularProgressIndicator()),
         'label': 'Experts',
         'icon': const Icon(Icons.home),
       },
@@ -34,19 +57,6 @@ class _TabsScreenState extends State<TabsScreen> {
         'icon': const Icon(Icons.chat),
       },
     ];
-    super.initState();
-  }
-
-  int _selectedPageIndex = 0;
-
-  void _selectPage(int index) {
-    setState(() {
-      _selectedPageIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: _selectedPageIndex != 0
           ? AppBar(

@@ -1,8 +1,14 @@
-import 'dart:math';
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-import './tabs_screen.dart';
-import './welcome_screen.dart';
+import 'package:expshare/screens/tabs_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import '../providers/experts.dart';
+import '../screens/login_screen.dart';
+import '../configuration/config.dart';
 
 class SplashScreen extends StatefulWidget {
   static const routeName = 'SplashScreen';
@@ -19,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-
+    loadData();
     _animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 800))
       ..addListener(() {
@@ -31,14 +37,29 @@ class _SplashScreenState extends State<SplashScreen>
     _animationController.forward();
   }
 
+  void loadData() async {
+    var url = Uri.http(Config.host, 'api/getAllSpecialties');
+
+    try {
+      await http.get(url).then((response) {
+        var decodedData = jsonDecode(response.body);
+        List categories = decodedData['data'];
+        categories.sort((a, b) {
+          return (a['id'] as int).compareTo((b['id'] as int));
+        });
+        Provider.of<Experts>(context, listen: false).categoriesList =
+            categories;
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   void getToken() async {
-    Future.delayed(
-      const Duration(seconds: 2),
-      () {
-        return Random().nextBool();
-      },
-    ).then((value) => Navigator.pushReplacementNamed(
-        context, value ? TabsScreen.routeName : WelcomeScreen.routeName));
+    const FlutterSecureStorage().read(key: 'access_token').then((value) {
+      Navigator.pushReplacementNamed(context,
+          value == null ? LogInScreen.routeName : TabsScreen.routeName);
+    });
   }
 
   @override

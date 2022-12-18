@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,8 +31,8 @@ class ExpertItem extends StatelessWidget {
             children: <Widget>[
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  expertData.image,
+                child: Image.memory(
+                  base64.decode(expertData.image),
                   fit: BoxFit.cover,
                   width: 100,
                   height: 100,
@@ -42,7 +45,7 @@ class ExpertItem extends StatelessWidget {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        "${expertData.firstName} ${expertData.lastName}",
+                        expertData.name,
                         style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -51,7 +54,9 @@ class ExpertItem extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      expertData.experienceCategory,
+                      expertProvider
+                          .getCatigoryById(expertData.experienceCategory)
+                          .type,
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                         color: Colors.grey,

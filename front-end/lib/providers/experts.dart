@@ -1,9 +1,13 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
 
-class Expert with ChangeNotifier {
+import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http;
+import '../configuration/config.dart';
+
+class Expert {
   final String id;
-  final String firstName;
-  final String lastName;
+  final String name;
   final String image;
   final String experienceCategory;
   final String phoneNumber;
@@ -16,8 +20,7 @@ class Expert with ChangeNotifier {
 
   Expert({
     required this.id,
-    required this.firstName,
-    required this.lastName,
+    required this.name,
     required this.image,
     required this.experienceCategory,
     required this.phoneNumber,
@@ -28,13 +31,9 @@ class Expert with ChangeNotifier {
     required this.price,
   });
 
-  String get fullName {
-    return '$firstName $lastName';
-  }
-
   Map<String, String> get expertMappedData {
     return {
-      'Name': fullName,
+      'Name': name,
       'Speciality': experienceCategory,
       'Phone Number': phoneNumber,
       'Experience': experience,
@@ -44,131 +43,82 @@ class Expert with ChangeNotifier {
       'Price Per Hour': '\$$price',
     };
   }
+
+  static Expert expertFromMap(Map expert) {
+    print(expert);
+    return Expert(
+        id: expert['id'].toString(),
+        name: 'kosai',
+        image: expert['imageUrl'],
+        experienceCategory: expert['specialty_id'].toString(),
+        phoneNumber: expert['phoneNum'].toString(),
+        experience: expert['details'],
+        rate: '100',
+        address: expert['address'],
+        email: expert['email'].toString(),
+        price: double.parse(expert['price'].toString()));
+  }
+}
+
+class Catigory {
+  final int id;
+  final String type;
+  Catigory({required this.id, required this.type});
 }
 
 class Experts with ChangeNotifier {
-  final List<String> categories = [
-    'All',
-    'Medical',
-    'professional',
-    'Psychological',
-    'family',
-    'Business',
-    'Computer Science',
-    'Artificial Intelligence',
-  ];
+  List<Catigory> categories = [];
+  List<Expert> _experts = [];
 
   String _searchInput = '';
   int _selectedCatergory = 0;
 
-  final List<Expert> _experts = [
-    Expert(
-      id: '0',
-      firstName: 'Ahmed',
-      lastName: 'Ahmed',
-      image: 'assets/illustrations/image.jpg',
-      experienceCategory: 'Psychology medicine',
-      phoneNumber: "+9639843212",
-      experience: "i have worked for a Big Hospital for 10 years",
-      rate: '4.5',
-      address: 'Germany',
-      email: 'myemail@gmail.com',
-      price: 5.9,
-    ),
-    Expert(
-      id: '1',
-      firstName: 'Sam',
-      lastName: 'Sam',
-      image: 'assets/illustrations/image1.jpg',
-      experienceCategory: 'Computer Science',
-      phoneNumber: "+9639843212",
-      experience: "i have worked for a Big Hospital for 10 years",
-      rate: '4.4',
-      address: 'Germany',
-      email: 'myemail@gmail.com',
-      price: 5.9,
-    ),
-    Expert(
-      id: '2',
-      firstName: 'Yahya',
-      lastName: 'Yahya',
-      image: 'assets/illustrations/image2.jpg',
-      experienceCategory: 'Business',
-      phoneNumber: "+9639843212",
-      experience: "i have worked for a Big Hospital for 10 years",
-      rate: '3.9',
-      address: 'Germany',
-      email: 'myemail@gmail.com',
-      price: 5.9,
-    ),
-    Expert(
-      id: '3',
-      firstName: 'Khaled',
-      lastName: 'Khaled',
-      image: 'assets/illustrations/image3.jpg',
-      experienceCategory: 'Artificial Intelligence',
-      phoneNumber: "+9639843212",
-      experience: "i have worked for a Big Hospital for 10 years",
-      rate: '3.5',
-      address: 'Germany',
-      email: 'myemail@gmail.com',
-      price: 5.9,
-    ),
-    Expert(
-      id: '4',
-      firstName: 'Lora',
-      lastName: 'Lora',
-      image: 'assets/illustrations/image4.jpg',
-      experienceCategory: 'family',
-      phoneNumber: "+9639843212",
-      experience: "i have worked for a Big Hospital for 10 years",
-      rate: '4.9',
-      address: 'Germany',
-      email: 'myemail@gmail.com',
-      price: 5.9,
-    ),
-    Expert(
-      id: '5',
-      firstName: 'Aya',
-      lastName: 'Aya',
-      image: 'assets/illustrations/image5.jpg',
-      experienceCategory: 'Artificial Intelligence',
-      phoneNumber: "+9639843212",
-      experience: "i have worked for a Big Hospital for 10 years",
-      rate: '4.0',
-      address: 'Germany',
-      email: 'myemail@gmail.com',
-      price: 5.9,
-    ),
-    Expert(
-      id: '6',
-      firstName: 'Reem',
-      lastName: 'Reem',
-      image: 'assets/illustrations/image6.jpg',
-      experienceCategory: 'Medical',
-      phoneNumber: "+9639843212",
-      experience: "i have worked for a Big Hospital for 10 years",
-      rate: '3.8',
-      address: 'Germany',
-      email: 'myemail@gmail.com',
-      price: 5.9,
-    ),
-  ];
+  set categoriesList(List values) {
+    for (var value in values) {
+      categories.add(Catigory(id: value['id'], type: value['type']));
+    }
+    notifyListeners();
+  }
+
+  Future getAllExperts() async {
+    var url = Uri.http(Config.host, 'api/getAllExperts');
+    var accessToken =
+        await const FlutterSecureStorage().read(key: 'access_token');
+
+    await http.get(
+      url,
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $accessToken'
+      },
+    ).then((value) {
+      var decodedData = jsonDecode(value.body);
+      List experts = decodedData['data'];
+
+      _experts = experts.map((json) => Expert.expertFromMap(json)).toList();
+    });
+    print(_experts);
+    notifyListeners();
+  }
 
   List<Expert> get getFilteredExperts {
     var filteredExperts = [
       ..._experts
           .where((expert) =>
               _selectedCatergory == 0 ||
-              categories[_selectedCatergory] == expert.experienceCategory)
+              categories[_selectedCatergory].id.toString() ==
+                  expert.experienceCategory)
           .toList()
     ];
     return [
       ...filteredExperts
           .where((expert) =>
-              expert.firstName.toLowerCase().startsWith(_searchInput) ||
-              expert.lastName.toLowerCase().startsWith(_searchInput) ||
-              expert.experienceCategory.toLowerCase().startsWith(_searchInput))
+              expert.name.toLowerCase().startsWith(_searchInput) ||
+              getCatigoryById(expert.experienceCategory)
+                  .type
+                  .toLowerCase()
+                  .startsWith(_searchInput))
           .toList()
     ];
   }
@@ -194,6 +144,10 @@ class Experts with ChangeNotifier {
 
   Expert getExpertById(String id) {
     return _experts.firstWhere((expert) => expert.id == id);
+  }
+
+  Catigory getCatigoryById(String id) {
+    return categories.firstWhere((catigory) => catigory.id.toString() == id);
   }
 
   void toggleFavoriteStatusForSpecificExpert(String id) {

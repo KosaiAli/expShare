@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +41,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen>
     final expertData = Provider.of<Experts>(context).getExpertById(expertId);
     final mediaQuery = MediaQuery.of(context);
     final appBar = AppBar(
-      title: Text(expertData.fullName),
+      title: Text(expertData.name),
     );
 
     return Scaffold(
@@ -49,8 +51,8 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen>
           width: double.infinity,
           child: Column(
             children: [
-              Image.asset(
-                expertData.image,
+              Image.memory(
+                base64.decode(expertData.image),
                 width: double.infinity,
                 height: 230,
                 fit: BoxFit.cover,
