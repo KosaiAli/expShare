@@ -43,7 +43,6 @@ class AuthController extends Controller
         }
 
         $accessToken = auth()->user()->createToken('authToken')->accessToken;
-
         return response(['user' => auth()->user(), 'access_token' => $accessToken]);
     }
 
@@ -106,7 +105,17 @@ class AuthController extends Controller
 
     public function userProfile()
     {
-        $user_data = auth()->user();
+        $user_data=auth()->user();
+        if ($user_data['isExpert']) {
+            $cases=Expert::query()->where('user_id','like',$user_data['id'])->get()->first();
+            return response()->json([
+                "status" => true,
+                "message" => "User data",
+                "data" => $user_data ,
+                "expert" => $cases,
+            ]);
+        }
+        //$user_data = auth()->user();
         $favorite=Favorite::query()->where('user_id','like',$user_data['id'])->get();
         return response()->json([
             "status" => true,

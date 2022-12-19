@@ -56,19 +56,19 @@ class ExpertController extends Controller
     {
         $validatedData = $request->validate([
             'expertId' => 'required',]);
-        $cases=Expert::query()->where('id','like',$validatedData['expertId'])->get();
-        $userCases=array();
-        for ($i=0;$i<count($cases);$i++) {
-            $case=$cases[$i];
-            $user=User::query()->where('id','like',$case->user_id)->first();
-            $case['name']=$user['name'];
-            $case['email']=$user['email'];
-            array_push($userCases,$case);
-        }
+        $cases=Expert::query()->where('id','like',$validatedData['expertId'])->get()->first();
+
+
+
+        $user=User::query()->where('id','like',$cases->user_id)->first();
+        $cases['name']=$user['name'];
+        $cases['email']=$user['email'];
+
+
         return response()->json([
             "status" => true,
             "message" => "success",
-            "data" => $userCases,
+            "data" => $cases,
         ]);
 
     }
