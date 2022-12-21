@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Expert;
 use App\Models\Favorite;
+use App\Models\Rate;
 use App\Models\Speciality;
 use App\Models\Time;
 use App\Models\User;
@@ -108,11 +109,13 @@ class AuthController extends Controller
         $user_data=auth()->user();
         if ($user_data['isExpert']) {
             $cases=Expert::query()->where('user_id','like',$user_data['id'])->get()->first();
+            $rate=Rate::query()->where('expert_id','like',$cases['id'])->avg('rate');
             return response()->json([
                 "status" => true,
                 "message" => "User data",
                 "data" => $user_data ,
                 "expert" => $cases,
+                "rate" => $rate,
             ]);
         }
         //$user_data = auth()->user();
@@ -124,6 +127,28 @@ class AuthController extends Controller
             "favorite" => $favorite,
         ]);
     }
+    public function AddRate(Request $request)
+    {
+        $user_data = auth()->user();
+        $validatedData = $request->validate([
+            'expert_id' => 'required',
+            'user_id' => 'nullable',
+            'rate' => 'required'
+        ]);
+        $validatedData1=request (['expert_id','user_id','rate']);
+        $validatedData1['user_id']=$user_data ['id'];
+        $exists= Rate::query()->where('user_id','like',$validatedData1['user_id'])
+            ->where('expert_id','like',$validatedData1['expert_id'])->exists();
+        if ($exists) {
+            return response(["message" => "not allow"]);
+        }
+        $rate = Rate::create($validatedData1);
+
+        return response(['rate' => $rate]);
+
+    }
+
+
 
 
 

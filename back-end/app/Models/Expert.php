@@ -48,4 +48,8 @@ class Expert extends Model
     {
         return $this->hasMany('favorites');
     }
+    public function rate (): HasMany
+    {
+        return $this->hasMany('rates');
+    }
 }

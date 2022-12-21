@@ -34,4 +34,5 @@ Route::group(["middleware" => ["auth:api"]], function(){
     Route::get("getExpert", [ExpertController::class, "getExpert"]);
     Route::post("AddToFavorite", [AuthController::class, "AddToFavorite"]);
     Route::get("userProfile", [AuthController::class, "userProfile"]);
+    Route::post("AddRate", [AuthController::class, "AddRate"]);
 });
