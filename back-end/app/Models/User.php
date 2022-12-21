@@ -63,4 +63,8 @@ class User extends Authenticatable
     {
         return $this->hasMany('favorites');
     }
+    public function rate (): HasMany
+    {
+        return $this->hasMany('rates');
+    }
 }
