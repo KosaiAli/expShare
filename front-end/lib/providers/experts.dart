@@ -1,77 +1,75 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import '../configuration/config.dart';
 
-class Expert {
-  final String id;
-  final String name;
-  final String image;
-  final String experienceCategory;
-  final String phoneNumber;
-  final String experience;
-  final String rate;
-  final String address;
-  final String email;
-  final double price;
-  bool isFavorite = false;
+import '../Models/catigory.dart';
+import '../Models/expert.dart';
+import '../https/config.dart';
+import '../screens/login_screen.dart';
 
-  Expert({
-    required this.id,
-    required this.name,
-    required this.image,
-    required this.experienceCategory,
-    required this.phoneNumber,
-    required this.experience,
-    required this.rate,
-    required this.address,
-    required this.email,
-    required this.price,
-  });
-
-  Map<String, String> get expertMappedData {
-    return {
-      'Name': name,
-      'Speciality': experienceCategory,
-      'Phone Number': phoneNumber,
-      'Experience': experience,
-      'Rate': rate,
-      'Address': address,
-      'Email': email,
-      'Price Per Hour': '\$$price',
-    };
-  }
-
-  static Expert expertFromMap(Map expert) {
-    print(expert);
-    return Expert(
-        id: expert['id'].toString(),
-        name: 'kosai',
-        image: expert['imageUrl'],
-        experienceCategory: expert['specialty_id'].toString(),
-        phoneNumber: expert['phoneNum'].toString(),
-        experience: expert['details'],
-        rate: '100',
-        address: expert['address'],
-        email: expert['email'].toString(),
-        price: double.parse(expert['price'].toString()));
-  }
-}
-
-class Catigory {
-  final int id;
-  final String type;
-  Catigory({required this.id, required this.type});
-}
+enum Language { english, arabic }
 
 class Experts with ChangeNotifier {
   List<Catigory> categories = [];
-  List<Expert> _experts = [];
 
+  Language language = Language.arabic;
+  set langValue(String lang) {
+    if (lang == 'Eng') {
+      language = Language.english;
+      return;
+    }
+    language = Language.arabic;
+  }
+
+  List<Expert> _experts = [];
+  late Expert? user;
   String _searchInput = '';
   int _selectedCatergory = 0;
+  late bool isExpert;
+  List favorites = [];
+
+  void initCategories(String? val) {
+    if (val == 'Ar') {
+      language = Language.arabic;
+    } else {
+      language = Language.english;
+    }
+    categories = [
+      Catigory(id: 1, type: language == Language.english ? 'All' : 'الكل'),
+      Catigory(id: 2, type: language == Language.english ? 'Medical' : 'طبية'),
+      Catigory(
+          id: 3, type: language == Language.english ? 'Professional' : 'مهنية'),
+      Catigory(
+          id: 4,
+          type: language == Language.english ? 'Psychological' : 'نفسية'),
+      Catigory(id: 5, type: language == Language.english ? 'Family' : 'عائلية'),
+      Catigory(
+          id: 6,
+          type: language == Language.english ? 'Business' : 'إدارة أعمال'),
+    ];
+    notifyListeners();
+  }
+
+  Future<List> getAvalibleTimes(String? expertID) async {
+    var url = Uri.http(Config.host, 'api/getAvailableTimes');
+    var header = await Config.getHeader();
+    header.addEntries({'expertId': expertID ?? user!.id}.entries);
+    var response = await http.get(url, headers: header);
+    var decodedData = jsonDecode(response.body);
+    return decodedData['data'];
+  }
+
+  Future<List> getBookedTimes() async {
+    var url = Uri.http(Config.host, 'api/getAppointment');
+    var header = await Config.getHeader();
+    header.addEntries({'expertId': user!.id}.entries);
+    var response = await http.get(url, headers: header);
+    var decodedData = jsonDecode(response.body);
+
+    return decodedData['data'];
+  }
 
   set categoriesList(List values) {
     for (var value in values) {
@@ -80,25 +78,54 @@ class Experts with ChangeNotifier {
     notifyListeners();
   }
 
-  Future getAllExperts() async {
-    var url = Uri.http(Config.host, 'api/getAllExperts');
-    var accessToken =
-        await const FlutterSecureStorage().read(key: 'access_token');
+  Future getUserData() async {
+    var url = Uri.http(Config.host, 'api/userProfile');
+    var header = await Config.getHeader();
 
-    await http.get(
+    await http.get(url, headers: header).then((value) {
+      try {
+        var decodedData = jsonDecode(value.body);
+
+        isExpert = decodedData['data']['isExpert'] == 1;
+
+        if (isExpert) {
+          user = Expert.expertFromMap(decodedData['data']);
+        } else {
+          favorites = decodedData['favorite'];
+        }
+        notifyListeners();
+      } catch (_) {
+        return;
+      }
+    });
+  }
+
+  Future getAllExperts() async {
+    if (isExpert) {
+      return;
+    }
+    var url = Uri.http(Config.host, 'api/getAllExperts');
+    var header = await Config.getHeader();
+    await http
+        .get(
       url,
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $accessToken'
-      },
-    ).then((value) {
+      headers: header,
+    )
+        .then((value) {
       var decodedData = jsonDecode(value.body);
       List experts = decodedData['data'];
 
       _experts = experts.map((json) => Expert.expertFromMap(json)).toList();
     });
-    print(_experts);
+
+    for (var favorite in favorites) {
+      _experts
+          .elementAt(
+            _experts.indexWhere(
+                (element) => element.id == favorite['expert_id'].toString()),
+          )
+          .isFavorite = true;
+    }
     notifyListeners();
   }
 
@@ -146,13 +173,50 @@ class Experts with ChangeNotifier {
     return _experts.firstWhere((expert) => expert.id == id);
   }
 
+  Map<String, String> expertMappedData(Expert expert) {
+    return {
+      language == Language.english ? 'Name' : 'الاسم': expert.name,
+      language == Language.english ? 'Speciality' : 'الاختصاص':
+          getCatigoryById(expert.experienceCategory).type,
+      language == Language.english ? 'Phone Number' : 'رقم الهاتف':
+          expert.phoneNumber,
+      language == Language.english ? 'Experience' : 'الخبرات':
+          expert.experience,
+      language == Language.english ? 'Rate' : 'التقييم': expert.rate.toString(),
+      language == Language.english ? 'Address' : 'العنوان': expert.address,
+      language == Language.english ? 'Email' : 'الإيميل': expert.email,
+      language == Language.english ? 'Price Per Hour' : 'سعر الجلسة':
+          '\$${expert.price}',
+    };
+  }
+
   Catigory getCatigoryById(String id) {
     return categories.firstWhere((catigory) => catigory.id.toString() == id);
   }
 
-  void toggleFavoriteStatusForSpecificExpert(String id) {
-    final expertIndex = _experts.indexWhere((expert) => expert.id == id);
+  Future<void> toggleFavoriteStatusForSpecificExpert(String id) async {
+    final expertIndex = _experts.indexWhere((element) => element.id == id);
     _experts[expertIndex].isFavorite = !_experts[expertIndex].isFavorite;
+    var url = Uri.http(Config.host, 'api/AddToFavorite');
+    var header = await Config.getHeader();
+    await http.post(url, headers: header, body: jsonEncode({'expert_id': id}));
+
+    notifyListeners();
+  }
+
+  Future<void> logot(BuildContext context) async {
+    user = null;
+    favorites = [];
+    isExpert = false;
+    var url = Uri.http(Config.host, 'api/logout');
+    var header = await Config.getHeader();
+    FlutterSecureStorage storage = const FlutterSecureStorage();
+
+    await http.post(url, headers: header).then((value) async {
+      await storage.delete(key: 'access_token').then((_) =>
+          Navigator.pushNamedAndRemoveUntil(
+              context, LogInScreen.routeName, (route) => false));
+    });
     notifyListeners();
   }
 }

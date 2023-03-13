@@ -1,6 +1,8 @@
+import 'package:expshare/providers/experts.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import '../providers/experts.dart';
+import '../Models/expert.dart';
 
 class AboutMe extends StatelessWidget {
   final Expert expertData;
@@ -8,6 +10,8 @@ class AboutMe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var provider = Provider.of<Experts>(context);
+    var language = provider.language;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -15,35 +19,39 @@ class AboutMe extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: expertData.expertMappedData.entries
-            .map((e) => infoSlice(e.key, e.value))
+        children: provider
+            .expertMappedData(expertData)
+            .entries
+            .map((e) => infoSlice(e.key, e.value, language))
             .toList(),
       ),
     );
   }
 }
 
-Widget infoSlice(String title, String text) {
+Widget infoSlice(String title, String text, language) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: RichText(
-          text: TextSpan(
-              text: '$title:  ',
+        child: Directionality(
+          textDirection: language == Language.english
+              ? TextDirection.ltr
+              : TextDirection.rtl,
+          child: Row(children: [
+            Text('$title:  ',
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                )),
+            Text(
+              title == 'Rate' ? '$text / 5' : text,
               style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.normal,
               ),
-              children: [
-                TextSpan(
-                  text: title == 'Rate' ? '$text / 5' : text,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.normal,
-                  ),
-                )
-              ]),
+            )
+          ]),
         ),
       ),
       if (title != 'Price Per Hour') const Divider(color: Colors.white),

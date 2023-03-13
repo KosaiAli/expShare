@@ -1,4 +1,6 @@
+import 'package:expshare/providers/experts.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/Forms/login_form.dart';
 
@@ -8,12 +10,13 @@ class LogInScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var data = Provider.of<Experts>(context);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height / 2.5,
+              height: MediaQuery.of(context).size.height * 0.4,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -24,7 +27,10 @@ class LogInScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                   Text(
-                    'Login to Your Account',
+                    data.language == Language.english
+                        ? 'Login to Your Account'
+                        : 'قم بتسجيل الدخول إلي حسابك',
+                    textAlign: TextAlign.center,
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
@@ -34,7 +40,7 @@ class LogInScreen extends StatelessWidget {
               ),
             ),
             SizedBox(
-                height: MediaQuery.of(context).size.height / 2,
+                height: MediaQuery.of(context).size.height * 0.4,
                 child: const LoginForm()),
           ],
         ),

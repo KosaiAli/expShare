@@ -1,10 +1,9 @@
 import 'dart:math';
 
-import 'package:expshare/screens/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:http/http.dart' as http;
-import '../configuration/config.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/experts.dart';
 
 class SearchBar extends StatefulWidget implements PreferredSizeWidget {
   @override
@@ -29,9 +28,11 @@ class _SearchBarState extends State<SearchBar> {
       cursorColor: Colors.white,
       style: const TextStyle(fontSize: 20),
       textInputAction: TextInputAction.search,
-      decoration: const InputDecoration(
-        hintText: 'Search  for  Expert name or Category',
-        hintStyle: TextStyle(color: Colors.white70, fontSize: 15),
+      decoration: InputDecoration(
+        hintText: Provider.of<Experts>(context).language == Language.english
+            ? 'Search  for  Expert name or Category'
+            : 'ابحث باستخدام اسم الخبير او التصنيف',
+        hintStyle: const TextStyle(color: Colors.white70, fontSize: 15),
         border: InputBorder.none,
       ),
       onChanged: (value) {
@@ -40,39 +41,9 @@ class _SearchBarState extends State<SearchBar> {
     );
   }
 
-  Future<void> _logot() async {
-    var url = Uri.http(Config.host, 'api/logout');
-    FlutterSecureStorage storage = const FlutterSecureStorage();
-    var accessToken = await storage.read(key: 'access_token');
-    await http.post(
-      url,
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $accessToken'
-      },
-    ).then((value) async {
-      print(value.statusCode);
-      print(value.body);
-      await storage.delete(key: 'access_token').then((_) =>
-          Navigator.pushNamedAndRemoveUntil(
-              context, LogInScreen.routeName, (route) => false));
-    });
-  }
-
   @override
   PreferredSizeWidget build(BuildContext context) {
     return AppBar(
-      leading: GestureDetector(
-        onTap: _logot,
-        child: Transform.rotate(
-          angle: 180 * pi / 180,
-          child: const Icon(
-            Icons.logout_rounded,
-            color: Colors.white,
-          ),
-        ),
-      ),
       centerTitle: !_searchMode,
       title: _searchMode ? _searchTextField() : const Text('EXPShare'),
       actions: [

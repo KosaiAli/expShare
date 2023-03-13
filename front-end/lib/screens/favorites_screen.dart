@@ -9,13 +9,17 @@ class FavoritesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final expertsData = Provider.of<Experts>(context).getFavoritedExperts;
-    return expertsData.isEmpty
-        ? const Padding(
-            padding: EdgeInsets.all(20),
+    final expertsData = Provider.of<Experts>(context);
+    final favorites = expertsData.getFavoritedExperts;
+    return favorites.isEmpty
+        ? Padding(
+            padding: const EdgeInsets.all(20),
             child: Text(
-              'There are no Favorites, pleas add some!',
-              style: TextStyle(color: Colors.black54, fontSize: 30),
+              expertsData.language == Language.english
+                  ? 'There are no favorites experts, please add some!'
+                  : 'لا يوجد خبراء مفضلون ، يرجى إضافة البعض!',
+              style: const TextStyle(color: Colors.black54, fontSize: 30),
+              textAlign: TextAlign.center,
             ),
           )
         : Padding(
@@ -24,9 +28,9 @@ class FavoritesScreen extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: ListView.builder(
-                      itemCount: expertsData.length,
+                      itemCount: favorites.length,
                       itemBuilder: (ctx, index) {
-                        final expertData = expertsData[index];
+                        final expertData = favorites[index];
                         return ExpertItem(id: expertData.id);
                       }),
                 )

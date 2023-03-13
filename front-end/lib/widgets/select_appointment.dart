@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+
+import '../https/config.dart';
 
 class SelectAppointment extends StatefulWidget {
   final double price;
@@ -71,6 +76,68 @@ class _SelectAppointmentState extends State<SelectAppointment> {
     });
   }
 
+  Future<void> addApointment() async {
+    if (startDate == null || endDate == null) {
+      return showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            content: const Text(
+              'Date not Specified',
+              style: TextStyle(color: Colors.black),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'OK!',
+                    style: TextStyle(color: Colors.blue),
+                  ))
+            ],
+          );
+        },
+      );
+    }
+
+    var date = DateFormat('yyyy-MM-dd').format(startDate!);
+    var startTime = DateFormat('HH:mm').format(startDate!);
+    var endTime = DateFormat('HH:mm').format(endDate!);
+    var url = Uri.http(Config.host, 'api/addAvailableTimes');
+    var header = await Config.getHeader();
+
+    await http
+        .post(url,
+            headers: header,
+            body: jsonEncode({
+              'start': startTime,
+              'end': endTime,
+              'day': date,
+            }))
+        .then(
+      (response) {
+        var decoddedData = jsonDecode(response.body);
+        {
+          showDialog(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                content: Text(decoddedData['message'] ?? 'Added successfully'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text(
+                        'OK!',
+                        style: TextStyle(color: Colors.blue),
+                      ))
+                ],
+              );
+            },
+          );
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -127,10 +194,7 @@ class _SelectAppointmentState extends State<SelectAppointment> {
                 appointmentDataRow(
                     endDate == null || startDate == null
                         ? "0"
-                        : (widget.price *
-                                (endDate!.difference(startDate!).inMinutes /
-                                    60))
-                            .toStringAsFixed(2),
+                        : widget.price.toStringAsFixed(2),
                     'Total Cost'),
               ],
             ),
@@ -144,12 +208,12 @@ class _SelectAppointmentState extends State<SelectAppointment> {
                   borderRadius: BorderRadius.circular(30),
                   side: BorderSide(color: Theme.of(context).primaryColor),
                 )),
-            onPressed: () {},
+            onPressed: addApointment,
             child: const SizedBox(
               width: double.infinity,
               child: Center(
                 child: Text(
-                  'Book an Appointment',
+                  'Add an Appointment',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,

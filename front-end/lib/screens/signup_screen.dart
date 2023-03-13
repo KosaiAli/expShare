@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/experts.dart';
 import '../widgets/Forms/signup_form.dart';
 
 class SignUpScreen extends StatelessWidget {
@@ -9,12 +11,14 @@ class SignUpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var data = Provider.of<Experts>(context);
+    var mediaQuery = MediaQuery.of(context);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height / 2.5,
+              height: mediaQuery.size.height * 0.4,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -25,7 +29,9 @@ class SignUpScreen extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                   Text(
-                    'Create New Account',
+                    data.language == Language.english
+                        ? 'Create New Account'
+                        : 'إنشاء حساب جديد',
                     style: Theme.of(context)
                         .textTheme
                         .titleLarge
@@ -35,7 +41,9 @@ class SignUpScreen extends StatelessWidget {
               ),
             ),
             SizedBox(
-                height: MediaQuery.of(context).size.height / 2,
+                height: mediaQuery.viewInsets.bottom == 0
+                    ? mediaQuery.size.height * 0.6
+                    : mediaQuery.size.height * 0.5,
                 child: const SingUpForm()),
           ],
         ),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class WelcomeScreenButton extends StatelessWidget {
   const WelcomeScreenButton(
       {super.key, required this.onPressed, required this.child});
-  final Function onPressed;
+  final VoidCallback onPressed;
   final String child;
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class WelcomeScreenButton extends StatelessWidget {
         horizontal: 50,
       ),
       child: GestureDetector(
-        onTap: () => onPressed(context),
+        onTap: onPressed,
         child: Container(
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,

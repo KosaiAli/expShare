@@ -1,9 +1,9 @@
-import 'package:expshare/providers/experts.dart';
-import 'package:expshare/screens/fill_your_information.dart';
-import 'package:expshare/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import "package:provider/provider.dart";
 
+import './providers/experts.dart';
+import './screens/fill_your_information.dart';
+import './screens/splash_screen.dart';
 import './constants.dart';
 import './screens/login_screen.dart';
 import './screens/signup_screen.dart';

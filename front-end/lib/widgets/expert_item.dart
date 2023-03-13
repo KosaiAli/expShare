@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,98 +13,104 @@ class ExpertItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final expertProvider = Provider.of<Experts>(context);
     final expertData = expertProvider.getExpertById(id);
-    return SizedBox(
-      width: 125,
-      height: 125,
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        elevation: 5,
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.memory(
-                  base64.decode(expertData.image),
-                  fit: BoxFit.cover,
-                  width: 100,
-                  height: 100,
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(left: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: SizedBox(
+        width: 100,
+        height: 110,
+        child: GestureDetector(
+          onTap: () => {
+            Navigator.pushNamed(context, ExpertProfileScreen.routeName,
+                arguments: id)
+          },
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 5,
+            child: Directionality(
+              textDirection: expertProvider.language == Language.english
+                  ? TextDirection.ltr
+                  : TextDirection.rtl,
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(
                   children: <Widget>[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        'http://127.0.0.1:8000/expShare/${expertData.image}',
+                        fit: BoxFit.cover,
+                        width: 85,
+                        height: 85,
+                      ),
+                    ),
+                    const SizedBox(width: 15),
                     Expanded(
-                      child: Text(
-                        expertData.name,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            expertData.name,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            expertProvider
+                                .getCatigoryById(expertData.experienceCategory)
+                                .type,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              iconButtonBuilder(
+                                  context,
+                                  () => {
+                                        Navigator.pushNamed(
+                                            context, ChatScreen.routeName)
+                                      },
+                                  Icons.message),
+                              Text(
+                                expertData.rate != 0
+                                    ? '${expertData.rate.toStringAsFixed(1)}/5'
+                                    : 'not rated',
+                                style: const TextStyle(
+                                    color: Colors.amber, fontSize: 16),
+                              )
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    Text(
-                      expertProvider
-                          .getCatigoryById(expertData.experienceCategory)
-                          .type,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        color: Colors.grey,
-                      ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        iconButtonBuilder(context, () => {}, Icons.phone),
+                    Column(
+                      children: [
                         iconButtonBuilder(
-                            context,
-                            () => {
-                                  Navigator.pushNamed(
-                                      context, ChatScreen.routeName)
-                                },
-                            Icons.message),
-                        const Text(
-                          '4.6/5',
-                          style: TextStyle(color: Colors.amber, fontSize: 16),
-                        )
+                          context,
+                          () {
+                            expertProvider
+                                .toggleFavoriteStatusForSpecificExpert(id);
+                          },
+                          expertData.isFavorite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          size: 25,
+                          aligment: Alignment.topCenter,
+                        ),
                       ],
-                    ),
+                    )
                   ],
                 ),
               ),
-              Column(
-                children: [
-                  iconButtonBuilder(
-                    context,
-                    () {
-                      expertProvider.toggleFavoriteStatusForSpecificExpert(id);
-                    },
-                    expertData.isFavorite
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    size: 25,
-                    aligment: Alignment.topCenter,
-                  ),
-                  iconButtonBuilder(
-                    context,
-                    () => {
-                      Navigator.pushNamed(
-                          context, ExpertProfileScreen.routeName,
-                          arguments: id)
-                    },
-                    Icons.person,
-                    size: 25,
-                    aligment: Alignment.center,
-                  ),
-                ],
-              )
-            ],
+            ),
           ),
         ),
       ),
@@ -118,14 +121,18 @@ class ExpertItem extends StatelessWidget {
 Widget iconButtonBuilder(
     BuildContext context, VoidCallback onPressed, IconData icon,
     {Alignment aligment = Alignment.centerLeft, double size = 20.0}) {
-  return IconButton(
-    padding: const EdgeInsets.all(0),
-    alignment: aligment,
-    onPressed: onPressed,
-    icon: Icon(
-      icon,
-      color: Theme.of(context).primaryColor,
-      size: size,
+  var data = Provider.of<Experts>(context).language;
+  return GestureDetector(
+    onTap: onPressed,
+    child: Padding(
+      padding: EdgeInsets.only(
+          right: data == Language.english ? 10 : 0,
+          left: data == Language.english ? 0 : 10),
+      child: Icon(
+        icon,
+        color: Theme.of(context).primaryColor,
+        size: size,
+      ),
     ),
   );
 }

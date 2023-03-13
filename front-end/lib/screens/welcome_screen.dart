@@ -1,9 +1,12 @@
-import 'package:expshare/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 
 import '../constants.dart';
+import '../providers/experts.dart';
 import '../widgets/welcome_item.dart';
-import 'welcome_screen_button.dart';
+import '../widgets/buttons/welcome_screen_button.dart';
+import '../screens/login_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -14,7 +17,7 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   int index = 0;
-
+  var welcomeItem = [];
   List<Widget> indicators() {
     return welcomeItem.map((item) {
       final n = welcomeItem.indexOf(item);
@@ -31,18 +34,44 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     }).toList();
   }
 
-  void navigateToNext(BuildContext context) {
-    if (index < welcomeItem.length - 1) {
-      pageController.nextPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.linear);
-    } else {
-      Navigator.pushReplacementNamed(context, LogInScreen.routeName);
+  Future<void> navigateToNext() async {
+    if (index == welcomeItem.length - 1) {
+      await const FlutterSecureStorage()
+          .write(key: 'first_time', value: 'true')
+          .then((_) {
+        Navigator.pushReplacementNamed(context, LogInScreen.routeName);
+      });
+      return;
     }
+    pageController.nextPage(
+        duration: const Duration(milliseconds: 300), curve: Curves.linear);
   }
 
   final PageController pageController = PageController();
   @override
   Widget build(BuildContext context) {
+    var data = Provider.of<Experts>(context);
+    welcomeItem = [
+      {
+        'index': 1,
+        'title': data.language == Language.english
+            ? 'Thousands of experts are ready to help you'
+            : 'آلاف الخبراء جاهزون لمساعدتك',
+      },
+      {
+        'index': 2,
+        'title': data.language == Language.english
+            ? 'Consulations easily anywhere anytime'
+            : 'استشر بسهولة في أي مكان وفي أي وقت',
+      },
+      {
+        'index': 3,
+        'title': data.language == Language.english
+            ? 'Find doctors and more experts here'
+            : 'ابحث عن الأطباء والمزيد من الخبراء هنا',
+      }
+    ];
+
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -80,7 +109,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
           WelcomeScreenButton(
             onPressed: navigateToNext,
-            child: index == welcomeItem.length - 1 ? 'Get Started' : 'Next',
+            child: index == welcomeItem.length - 1
+                ? data.language == Language.english
+                    ? 'Get Started'
+                    : 'البدء'
+                : data.language == Language.english
+                    ? 'Next'
+                    : 'التالي',
           )
         ],
       ),
