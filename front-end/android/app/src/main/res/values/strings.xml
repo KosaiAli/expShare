@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">"expShare"</string>
+    <string name="facebook_app_id">836853590742723</string>
+    <string name="fb_login_protocol_scheme">fb836853590742723</string>
+    <string name="facebook_client_token">e09bab8574fc62eaa6db8ccb98c2c04a</string>
+</resources>

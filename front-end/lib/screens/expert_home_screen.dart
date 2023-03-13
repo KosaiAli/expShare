@@ -1,10 +1,13 @@
-import 'package:expshare/constants.dart';
-import 'package:expshare/screens/tabs_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl_standalone.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
+import '../widgets/available_times.dart';
+import '../widgets/booked_appointment.dart';
 import '../providers/experts.dart';
-import '../widgets/search_bar.dart';
+import '../widgets/navigation_drawer.dart';
 
 class ExpertHomeScreen extends StatefulWidget {
   const ExpertHomeScreen({super.key});
@@ -20,8 +23,13 @@ class _ExpertHomeScreenState extends State<ExpertHomeScreen>
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
-
+    load();
     super.initState();
+  }
+
+  Future<void> load() async {
+    initializeDateFormatting();
+    Intl.systemLocale = await findSystemLocale();
   }
 
   @override
@@ -34,9 +42,11 @@ class _ExpertHomeScreenState extends State<ExpertHomeScreen>
   Widget build(BuildContext context) {
     final expertsData = Provider.of<Experts>(context);
     final mediaQuery = MediaQuery.of(context);
-    final appBar = SearchBar(forwardingSearchInput: () {});
+    final appBar = AppBar(
+      title: const Text('ExpShare'),
+    );
     return Scaffold(
-      drawer: NavigationDrawer(),
+      drawer: const NavigationDrawer(),
       appBar: appBar,
       body: Column(
         children: [
@@ -64,123 +74,7 @@ class _ExpertHomeScreenState extends State<ExpertHomeScreen>
             ),
             child: TabBarView(
               controller: _tabController,
-              children: [
-                FutureBuilder(
-                    future:
-                        Provider.of<Experts>(context).getAvalibleTimes(null),
-                    builder: (ctx, snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data!.isEmpty) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                expertsData.language == Language.english
-                                    ? 'You haven\'t add any times \nTry to add some in your profile'
-                                    : 'لم تقم بإضافة أي مواعيد حاول إضافة بعض المواعيد في ملفك الشخصي',
-                                textAlign: TextAlign.center,
-                                style: kTitleMediumStyle,
-                              ),
-                            ],
-                          );
-                        }
-                        return ListView.builder(
-                            itemCount: snapshot.data?.length,
-                            itemBuilder: (context, index) {
-                              const textStyle =
-                                  TextStyle(color: Colors.black, fontSize: 18);
-                              return Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Date : ${snapshot.data![index]['day']}',
-                                        style: textStyle,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        'Start at : ${snapshot.data![index]['start']}',
-                                        style: textStyle,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        'End at : ${snapshot.data![index]['end']}',
-                                        style: textStyle,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            });
-                      }
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          CircularProgressIndicator(),
-                        ],
-                      );
-                    }),
-                FutureBuilder(
-                    future: Provider.of<Experts>(context).getBookedTimes(),
-                    builder: (ctx, snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data!.isEmpty) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                expertsData.language == Language.english
-                                    ? 'Looks like no one has taken reservations yet. Make sure to add available times for the week'
-                                    : 'يبدو أن لا أحد قام بالحجز بعد تأكد من إضافة الأوقات المتاحة للأسبوع',
-                                textAlign: TextAlign.center,
-                                style: kTitleMediumStyle,
-                              ),
-                            ],
-                          );
-                        }
-                        return ListView.builder(
-                            itemCount: snapshot.data?.length,
-                            itemBuilder: (context, index) {
-                              const textStyle =
-                                  TextStyle(color: Colors.black, fontSize: 18);
-                              return Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Date : ${snapshot.data![index]['day']}',
-                                        style: textStyle,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        'Start at : ${snapshot.data![index]['start']}',
-                                        style: textStyle,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      Text(
-                                        'End at : ${snapshot.data![index]['end']}',
-                                        style: textStyle,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            });
-                      }
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          CircularProgressIndicator(),
-                        ],
-                      );
-                    }),
-              ],
+              children: const [AvailablTimes(), BookedAppointment()],
             ),
           ),
         ],

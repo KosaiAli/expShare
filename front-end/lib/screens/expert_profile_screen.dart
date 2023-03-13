@@ -1,13 +1,10 @@
-import 'dart:convert';
-
-import 'package:expshare/https/config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 
 import '../Models/expert.dart';
 import '../providers/experts.dart';
 import '../widgets/about_me.dart';
+import '../widgets/book_appointment.dart';
 import '../widgets/select_appointment.dart';
 import '../widgets/expert_evaluation.dart';
 
@@ -67,7 +64,7 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen>
             child: Column(
               children: [
                 Image.network(
-                  "http://127.0.0.1:8000/expShare/${expertData.image}",
+                  "http://127.0.0.1:8000/${expertData.image}",
                   width: double.infinity,
                   height: 230,
                   fit: BoxFit.cover,
@@ -127,110 +124,5 @@ class _ExpertProfileScreenState extends State<ExpertProfileScreen>
         ),
       ),
     );
-  }
-}
-
-class BookAppointment extends StatefulWidget {
-  const BookAppointment({super.key, required this.expertID});
-  final String expertID;
-  @override
-  State<BookAppointment> createState() => _BookAppointmentState();
-}
-
-class _BookAppointmentState extends State<BookAppointment> {
-  List? appointemnts;
-  @override
-  void initState() {
-    getAppointemnts();
-    super.initState();
-  }
-
-  void getAppointemnts() async {
-    appointemnts = await Provider.of<Experts>(context, listen: false)
-        .getAvalibleTimes(widget.expertID);
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  Future<void> bookAppointment(int timeID) async {
-    var url = Uri.http(Config.host, 'api/addAppointment');
-    var header = await Config.getHeader();
-    await http.post(url,
-        headers: header,
-        body: jsonEncode({'time_id': timeID, 'expert_id': widget.expertID}));
-
-    getAppointemnts();
-    showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          content: const Text(
-            'Appointment Booked successfully :)',
-            style: TextStyle(color: Colors.black),
-          ),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'OK!',
-                  style: TextStyle(color: Colors.blue),
-                ))
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Builder(builder: (ctx) {
-      if (appointemnts != null) {
-        return ListView.builder(
-            itemCount: appointemnts!.length,
-            itemBuilder: (context, index) {
-              const textStyle = TextStyle(color: Colors.black, fontSize: 18);
-              return Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            'Date : ${appointemnts![index]['day']}',
-                            style: textStyle,
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'Start at : ${appointemnts![index]['start']}',
-                            style: textStyle,
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'End at : ${appointemnts![index]['end']}',
-                            style: textStyle,
-                          ),
-                        ],
-                      ),
-                      GestureDetector(
-                          onTap: () =>
-                              bookAppointment(appointemnts![index]['id']),
-                          child: const Icon(Icons.add))
-                    ],
-                  ),
-                ),
-              );
-            });
-      }
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          CircularProgressIndicator(),
-        ],
-      );
-    });
   }
 }

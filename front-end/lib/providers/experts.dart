@@ -1,9 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:expshare/constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../Models/user.dart';
 import '../Models/catigory.dart';
 import '../Models/expert.dart';
 import '../https/config.dart';
@@ -12,59 +16,162 @@ import '../screens/login_screen.dart';
 enum Language { english, arabic }
 
 class Experts with ChangeNotifier {
-  List<Catigory> categories = [];
+  TextEditingController numberController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController costController = TextEditingController();
+  Set listOfDays = {};
+  Set categoriesSet = {};
+  DateTime? dayStart;
+  DateTime? dayEnd;
+  File? profilePic;
+
+  List categories = [];
+  List translatedCat = [];
+  List translateddays = [];
 
   Language language = Language.arabic;
-  set langValue(String lang) {
-    if (lang == 'Eng') {
-      language = Language.english;
-      return;
-    }
-    language = Language.arabic;
-  }
 
   List<Expert> _experts = [];
-  late Expert? user;
+  dynamic user;
   String _searchInput = '';
   int _selectedCatergory = 0;
   late bool isExpert;
   List favorites = [];
 
-  void initCategories(String? val) {
-    if (val == 'Ar') {
-      language = Language.arabic;
-    } else {
-      language = Language.english;
+  void clearForm() {
+    // numberController.clear();
+    // nameController.clear();
+    // addressController.clear();
+    // descriptionController.clear();
+    // priceController.clear();
+    // costController.clear();
+    // listOfDays = {};
+    // categoriesSet = {};
+    // dayEnd = null;
+    // dayStart = null;
+    // profilePic = null;
+  }
+
+  set setDayStart(date) {
+    dayStart = date;
+  }
+
+  set setDayEnd(date) {
+    dayEnd = date;
+  }
+
+  set setPickedImage(pickedImage) {
+    profilePic = pickedImage;
+  }
+
+  void addToDaysList(index) {
+    if (listOfDays.contains(weekDays[index])) {
+      listOfDays.remove(weekDays[index]);
+      notifyListeners();
+      return;
     }
-    categories = [
-      Catigory(id: 1, type: language == Language.english ? 'All' : 'الكل'),
-      Catigory(id: 2, type: language == Language.english ? 'Medical' : 'طبية'),
-      Catigory(
-          id: 3, type: language == Language.english ? 'Professional' : 'مهنية'),
-      Catigory(
-          id: 4,
-          type: language == Language.english ? 'Psychological' : 'نفسية'),
-      Catigory(id: 5, type: language == Language.english ? 'Family' : 'عائلية'),
-      Catigory(
-          id: 6,
-          type: language == Language.english ? 'Business' : 'إدارة أعمال'),
-    ];
+    listOfDays.add(weekDays[index]);
     notifyListeners();
   }
 
-  Future<List> getAvalibleTimes(String? expertID) async {
+  Future<void> initCategories(List cats) async {
+    FlutterSecureStorage storage = const FlutterSecureStorage();
+    var lang = await storage.read(key: 'language');
+    if (lang != null) {
+      language = lang == 'Ar' ? Language.arabic : Language.english;
+    } else {
+      language = Language.english;
+
+      await storage.write(key: 'language', value: 'Ar');
+    }
+
+    categories = cats.map((e) => e['name']).toList();
+
+    await translate();
+    notifyListeners();
+  }
+
+  Future<void> setLanguage(lang) async {
+    FlutterSecureStorage storage = const FlutterSecureStorage();
+    if (lang == 'En') {
+      await storage.write(key: 'language', value: 'En');
+      language = Language.english;
+    } else {
+      await storage.write(key: 'language', value: 'Ar');
+      language = Language.arabic;
+    }
+    await translate();
+    notifyListeners();
+  }
+
+  Future<void> translate() async {
+    translatedCat = [];
+    translateddays = [];
+    if (language == Language.arabic) {
+      for (var element in categories) {
+        if (element == 'Medical') {
+          translatedCat.add('طبية');
+        }
+        if (element == 'Professional') {
+          translatedCat.add('مهنية');
+        }
+        if (element == 'Psychological') {
+          translatedCat.add('نفسية');
+        }
+        if (element == 'Family') {
+          translatedCat.add('عائلية');
+        }
+        if (element == 'Business / management') {
+          translatedCat.add('إدارة الإعمال');
+        }
+      }
+      for (var element in weekDays) {
+        if (element == 'Sun') {
+          translateddays.add('الأحد');
+        }
+        if (element == 'Mon') {
+          translateddays.add('الاثنين');
+        }
+        if (element == 'Tue') {
+          translateddays.add('الثلاثاء');
+        }
+        if (element == 'Wed') {
+          translateddays.add('الأربعاء');
+        }
+        if (element == 'Thu') {
+          translateddays.add('الخميس');
+        }
+        if (element == 'Fri') {
+          translateddays.add('الجمعة');
+        }
+        if (element == 'Sat') {
+          translateddays.add('السبت');
+        }
+      }
+      return;
+    } else {
+      translatedCat = categories;
+      translateddays = weekDays;
+    }
+  }
+
+  Future<Map> getAvalibleTimes(String? expertID) async {
     var url = Uri.http(Config.host, 'api/getAvailableTimes');
     var header = await Config.getHeader();
-    header.addEntries({'expertId': expertID ?? user!.id}.entries);
+    header.addEntries({'expertId': expertID ?? (user as Expert).id}.entries);
     var response = await http.get(url, headers: header);
     var decodedData = jsonDecode(response.body);
-    return decodedData['data'];
+
+    return decodedData;
   }
 
   Future<List> getBookedTimes() async {
     var url = Uri.http(Config.host, 'api/getAppointment');
     var header = await Config.getHeader();
-    header.addEntries({'expertId': user!.id}.entries);
+    header.addEntries({'expertId': (user as Expert).id}.entries);
     var response = await http.get(url, headers: header);
     var decodedData = jsonDecode(response.body);
 
@@ -78,6 +185,16 @@ class Experts with ChangeNotifier {
     notifyListeners();
   }
 
+  void selectCategory(i) {
+    if (categoriesSet.contains(categories[i])) {
+      categoriesSet.remove(categories[i]);
+      notifyListeners();
+      return;
+    }
+    categoriesSet.add(categories[i]);
+    notifyListeners();
+  }
+
   Future getUserData() async {
     var url = Uri.http(Config.host, 'api/userProfile');
     var header = await Config.getHeader();
@@ -85,12 +202,14 @@ class Experts with ChangeNotifier {
     await http.get(url, headers: header).then((value) {
       try {
         var decodedData = jsonDecode(value.body);
-
+        print(decodedData);
         isExpert = decodedData['data']['isExpert'] == 1;
 
         if (isExpert) {
           user = Expert.expertFromMap(decodedData['data']);
         } else {
+          user = User.userfromJson(decodedData['data']);
+
           favorites = decodedData['favorite'];
         }
         notifyListeners();
@@ -148,11 +267,6 @@ class Experts with ChangeNotifier {
                   .startsWith(_searchInput))
           .toList()
     ];
-  }
-
-  void selectCategory(int categoryIndex) {
-    _selectedCatergory = categoryIndex;
-    notifyListeners();
   }
 
   void searchInput(String value) {

@@ -1,0 +1,31 @@
+var url = Uri.http('127.0.0.1:8000', 'api/register');
+
+var header =  {
+  'Content-type': 'application/json',
+  'Accept': 'application/json',
+};
+var request = http.MultipartRequest('POST', url)
+  ..files.add(await http.MultipartFile.fromPath(
+      'profile_picture', base64Image.path))
+  ..headers.addAll(header)
+  ..fields.addAll({
+    'name': 'Expertname',
+    'email': 'ExpertEmail@gmail.com',
+    'phone': '0123456789',
+    'address': 'Damascus',
+    'wallet': '100.005',
+    'is_expert': '1',
+    'cost': '100',
+    'start_day': '12:15:00',
+    'end_day': '15:15:00',
+    'password': 'VeryStrongPassword',
+    'skills': 'very good',
+    'days': '["Sun","Tue","Wed"]',
+    'consultings':
+        '["Business / management Consultings","Professional Consultings"]'
+  });
+
+  var response = await request.send();
+      await response.stream.bytesToString().then((respStr) {
+                var decodedData = json.decode(respStr);
+      });

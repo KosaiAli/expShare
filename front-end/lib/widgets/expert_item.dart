@@ -37,9 +37,9 @@ class ExpertItem extends StatelessWidget {
                 child: Row(
                   children: <Widget>[
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(85),
                       child: Image.network(
-                        'http://127.0.0.1:8000/expShare/${expertData.image}',
+                        'http://127.0.0.1:8000/${expertData.image}',
                         fit: BoxFit.cover,
                         width: 85,
                         height: 85,
@@ -75,8 +75,12 @@ class ExpertItem extends StatelessWidget {
                               iconButtonBuilder(
                                   context,
                                   () => {
-                                        Navigator.pushNamed(
-                                            context, ChatScreen.routeName)
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ChatScreen(
+                                                        reciver: expertData)))
                                       },
                                   Icons.message),
                               Text(

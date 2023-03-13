@@ -1,10 +1,11 @@
 import 'dart:convert';
 
-import 'package:expshare/providers/experts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+
+import '../providers/experts.dart';
 import '../https/config.dart';
 
 class ExpertEvaluation extends StatefulWidget {
@@ -65,7 +66,9 @@ class _ExpertEvaluationState extends State<ExpertEvaluation> {
                   : 'تم التقييم بنجاح';
             }
             return Directionality(
-              textDirection: TextDirection.rtl,
+              textDirection: provider.language == Language.english
+                  ? TextDirection.ltr
+                  : TextDirection.rtl,
               child: AlertDialog(
                 content: Text(
                   message,
@@ -120,7 +123,9 @@ class _ExpertEvaluationState extends State<ExpertEvaluation> {
                 ? expertProvider.language == Language.english
                     ? 'Your rate: $rating'
                     : 'تقييمك: $rating'
-                : 'My rate : ${expertProvider.user!.rate}',
+                : expertProvider.language == Language.english
+                    ? 'My rate : ${expertProvider.user!.rate}'
+                    : 'تقييمي : ${expertProvider.user!.rate}',
             style: TextStyle(
               color: Theme.of(context).primaryColor,
               fontSize: 20,

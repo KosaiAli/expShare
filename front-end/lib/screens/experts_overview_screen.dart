@@ -1,10 +1,10 @@
-import 'package:expshare/screens/tabs_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../Models/catigory.dart';
 import '../providers/experts.dart';
 import '../widgets/expert_item.dart';
+import '../widgets/navigation_drawer.dart';
 import '../widgets/search_bar.dart';
 
 class ExpertsOverviewScreen extends StatelessWidget {
@@ -47,7 +47,7 @@ class ExpertsOverviewScreen extends StatelessWidget {
     );
   }
 
-  Widget categoryItemBuilder(List<Catigory> categories, Function selectCategory,
+  Widget categoryItemBuilder(List categories, Function selectCategory,
       int selectedCategory, context) {
     return SizedBox(
       height: 55,

@@ -14,37 +14,39 @@ class SignUpScreen extends StatelessWidget {
     var data = Provider.of<Experts>(context);
     var mediaQuery = MediaQuery.of(context);
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              height: mediaQuery.size.height * 0.4,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Image.asset(
-                    'assets/illustrations/logo.png',
-                    height: 200,
-                    width: 200,
-                    fit: BoxFit.cover,
+                  Hero(
+                    tag: 'signup',
+                    child: Image.asset(
+                      'assets/illustrations/sign_up.png',
+                      height: 300,
+                      width: 300,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  Text(
-                    data.language == Language.english
-                        ? 'Create New Account'
-                        : 'إنشاء حساب جديد',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(color: Colors.black),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      data.language == Language.english
+                          ? 'Create New Account'
+                          : 'إنشاء حساب جديد',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(color: Colors.black),
+                    ),
                   ),
+                  const SingUpForm(),
                 ],
               ),
             ),
-            SizedBox(
-                height: mediaQuery.viewInsets.bottom == 0
-                    ? mediaQuery.size.height * 0.6
-                    : mediaQuery.size.height * 0.5,
-                child: const SingUpForm()),
           ],
         ),
       ),

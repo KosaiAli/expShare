@@ -22,6 +22,7 @@ if (flutterVersionName == null) {
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
@@ -47,10 +48,11 @@ android {
         applicationId "com.example.expshare"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion 18
+        minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -58,6 +60,7 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+            
         }
     }
 }
@@ -68,4 +71,23 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation platform('com.google.firebase:firebase-bom:31.1.1')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation "androidx.multidex:multidex:2.0.1"
+    implementation 'com.facebook.android:facebook-core:latest.release'
+
+    // Facebook Login only
+    implementation 'com.facebook.android:facebook-login:latest.release'
+
+    // Facebook Share only
+    implementation 'com.facebook.android:facebook-share:latest.release'
+
+    // Facebook Messenger only
+    implementation 'com.facebook.android:facebook-messenger:latest.release'
+
+    // Facebook App Links only
+    implementation 'com.facebook.android:facebook-applinks:latest.release'
+
+    // Facebook Android SDK (everything)
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 }

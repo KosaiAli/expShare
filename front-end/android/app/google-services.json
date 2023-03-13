@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "919765289802",
+    "project_id": "expshare-96fe7",
+    "storage_bucket": "expshare-96fe7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:919765289802:android:357f79fd1f139ae2bf4fb3",
+        "android_client_info": {
+          "package_name": "com.example.expshare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "919765289802-eqc116nm4om3gaqa6n8mk3quf7hts44s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1qbI100-uGF-ioRdZsWUJzeS5jJcUXFs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "919765289802-eqc116nm4om3gaqa6n8mk3quf7hts44s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

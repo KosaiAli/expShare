@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:expshare/providers/experts.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 import '../https/config.dart';
 
@@ -77,31 +79,39 @@ class _SelectAppointmentState extends State<SelectAppointment> {
   }
 
   Future<void> addApointment() async {
+    var languge = Provider.of<Experts>(context, listen: false).language;
     if (startDate == null || endDate == null) {
       return showDialog(
         context: context,
         builder: (_) {
-          return AlertDialog(
-            content: const Text(
-              'Date not Specified',
-              style: TextStyle(color: Colors.black),
+          return Directionality(
+            textDirection: languge == Language.english
+                ? TextDirection.ltr
+                : TextDirection.rtl,
+            child: AlertDialog(
+              content: Text(
+                languge == Language.english
+                    ? 'Date not Specified'
+                    : 'يجب عليك إدخال التاريخ الوقت أولا',
+                style: const TextStyle(color: Colors.black),
+              ),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      languge == Language.english ? 'OK!' : 'تم!',
+                      style: const TextStyle(color: Colors.blue),
+                    ))
+              ],
             ),
-            actions: [
-              TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    'OK!',
-                    style: TextStyle(color: Colors.blue),
-                  ))
-            ],
           );
         },
       );
     }
 
-    var date = DateFormat('yyyy-MM-dd').format(startDate!);
-    var startTime = DateFormat('HH:mm').format(startDate!);
-    var endTime = DateFormat('HH:mm').format(endDate!);
+    var date = intl.DateFormat('yyyy-MM-dd', 'en').format(startDate!);
+    var startTime = intl.DateFormat('HH:mm', 'en').format(startDate!);
+    var endTime = intl.DateFormat('HH:mm', 'en').format(endDate!);
     var url = Uri.http(Config.host, 'api/addAvailableTimes');
     var header = await Config.getHeader();
 
@@ -120,16 +130,26 @@ class _SelectAppointmentState extends State<SelectAppointment> {
           showDialog(
             context: context,
             builder: (_) {
-              return AlertDialog(
-                content: Text(decoddedData['message'] ?? 'Added successfully'),
-                actions: [
-                  TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text(
-                        'OK!',
-                        style: TextStyle(color: Colors.blue),
-                      ))
-                ],
+              return Directionality(
+                textDirection: languge == Language.english
+                    ? TextDirection.ltr
+                    : TextDirection.rtl,
+                child: AlertDialog(
+                  content: Text(
+                    decoddedData['message'] ?? languge == Language.english
+                        ? 'Added successfully'
+                        : 'تمت الإضافة بنجاح',
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          languge == Language.english ? 'OK!' : 'تم!',
+                          style: const TextStyle(color: Colors.blue),
+                        ))
+                  ],
+                ),
               );
             },
           );
@@ -140,6 +160,7 @@ class _SelectAppointmentState extends State<SelectAppointment> {
 
   @override
   Widget build(BuildContext context) {
+    final data = Provider.of<Experts>(context);
     return Padding(
       padding: const EdgeInsets.all(30),
       child: Column(
@@ -159,7 +180,9 @@ class _SelectAppointmentState extends State<SelectAppointment> {
                 chooseAppointment(context);
               },
               child: Text(
-                'Choose Your Appointment date here.',
+                data.language == Language.english
+                    ? 'Choose Your Appointment date here.'
+                    : 'اضفط هنا لاختيار التاريخ',
                 style: TextStyle(color: Theme.of(context).primaryColor),
               ),
             ),
@@ -175,27 +198,37 @@ class _SelectAppointmentState extends State<SelectAppointment> {
               children: <Widget>[
                 appointmentDataRow(
                     startDate == null
-                        ? "Not Specified!"
-                        : DateFormat('yyyy/MM/dd').format(startDate!),
-                    'Date'),
+                        ? data.language == Language.english
+                            ? "Not Specified!"
+                            : "غير محدد"
+                        : intl.DateFormat('yyyy/MM/dd',
+                                data.language == Language.english ? 'en' : 'ar')
+                            .format(startDate!),
+                    data.language == Language.english ? 'Date' : 'التاريخ'),
                 const Divider(color: Colors.white),
                 appointmentDataRow(
                     startDate == null
-                        ? "Not Specified!"
-                        : DateFormat('HH:mm').format(startDate!),
-                    'Start Time'),
+                        ? data.language == Language.english
+                            ? "Not Specified!"
+                            : "غير محدد"
+                        : intl.DateFormat.jm(
+                                data.language == Language.english ? 'en' : 'ar')
+                            .format(startDate!),
+                    data.language == Language.english
+                        ? 'Start Time'
+                        : 'وقت البداية'),
                 const Divider(color: Colors.white),
                 appointmentDataRow(
                     endDate == null
-                        ? "Not Specified!"
-                        : DateFormat('HH:mm').format(endDate!),
-                    'End Time'),
-                const Divider(color: Colors.white),
-                appointmentDataRow(
-                    endDate == null || startDate == null
-                        ? "0"
-                        : widget.price.toStringAsFixed(2),
-                    'Total Cost'),
+                        ? data.language == Language.english
+                            ? "Not Specified!"
+                            : "غير محدد"
+                        : intl.DateFormat.jm(
+                                data.language == Language.english ? 'en' : 'ar')
+                            .format(endDate!),
+                    data.language == Language.english
+                        ? 'End Time'
+                        : 'وقت النهاية'),
               ],
             ),
           ),
@@ -209,12 +242,14 @@ class _SelectAppointmentState extends State<SelectAppointment> {
                   side: BorderSide(color: Theme.of(context).primaryColor),
                 )),
             onPressed: addApointment,
-            child: const SizedBox(
+            child: SizedBox(
               width: double.infinity,
               child: Center(
                 child: Text(
-                  'Add an Appointment',
-                  style: TextStyle(
+                  data.language == Language.english
+                      ? 'Add an Appointment'
+                      : 'إدخال',
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -235,9 +270,12 @@ class _SelectAppointmentState extends State<SelectAppointment> {
         children: [
           Text(
             title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
-          Text(text),
+          Text(
+            text,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
         ],
       ),
     );

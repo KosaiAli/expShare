@@ -66,7 +66,7 @@ String? passwordValidator(value, context) {
         ? 'This field is required'
         : 'هذا الحقل مطلوب';
   }
-  if (value.trim().length < 8) {
+  if (value.trim().length < 6) {
     return language == Language.english
         ? 'password must be 8 charecters at least'
         : 'كلمة السر يجب ان تكون مكونة من 8 حروف على الأقل';

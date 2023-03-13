@@ -1,8 +1,9 @@
+import 'package:expshare/constants.dart';
+import 'package:expshare/widgets/language_changer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
-import '../constants.dart';
 import '../providers/experts.dart';
 import '../widgets/welcome_item.dart';
 import '../widgets/buttons/welcome_screen_button.dart';
@@ -73,51 +74,98 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     ];
 
     final Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          SizedBox(
-            height: size.height * 0.70,
-            child: PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: pageController,
-              onPageChanged: (index) {
-                setState(
-                  () => this.index = index,
-                );
-              },
-              children: welcomeItem.map(
-                (item) {
-                  return WelcomeImage(
-                    index: item['index'] as int,
-                    title: item['title'] as String,
-                  );
-                },
-              ).toList(),
-            ),
+    return Directionality(
+      textDirection: data.language == Language.english
+          ? TextDirection.ltr
+          : TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: size.height * 0.60,
+                      child: PageView(
+                        controller: pageController,
+                        onPageChanged: (index) {
+                          setState(
+                            () => this.index = index,
+                          );
+                        },
+                        children: welcomeItem.map(
+                          (item) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Flexible(
+                                  child: Image.asset(
+                                    'assets/illustrations/illustration${item['index']}.png',
+                                    height: 300,
+                                    width: 300,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 40,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Text(
+                                    item['title'],
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge
+                                        ?.copyWith(color: kPrimaryColor),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                )
+                              ],
+                            );
+                          },
+                        ).toList(),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: indicators(),
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: WelcomeScreenButton(
+                          onPressed: navigateToNext,
+                          child: Text(
+                            index == welcomeItem.length - 1
+                                ? data.language == Language.english
+                                    ? 'Get Started'
+                                    : 'البدء'
+                                : data.language == Language.english
+                                    ? 'Next'
+                                    : 'التالي',
+                            style: kButtonStyle,
+                          )),
+                    ),
+                    Spacer(),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: LanguageChanger(),
+                    )
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(
-            height: 30,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: indicators(),
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          WelcomeScreenButton(
-            onPressed: navigateToNext,
-            child: index == welcomeItem.length - 1
-                ? data.language == Language.english
-                    ? 'Get Started'
-                    : 'البدء'
-                : data.language == Language.english
-                    ? 'Next'
-                    : 'التالي',
-          )
-        ],
+        ),
       ),
     );
   }

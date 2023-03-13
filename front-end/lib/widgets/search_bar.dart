@@ -1,8 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
+import '../constants.dart';
 import '../providers/experts.dart';
 
 class SearchBar extends StatefulWidget implements PreferredSizeWidget {
@@ -41,25 +41,44 @@ class _SearchBarState extends State<SearchBar> {
     );
   }
 
+  var timeBackpressed = DateTime.now();
   @override
   PreferredSizeWidget build(BuildContext context) {
     return AppBar(
       centerTitle: !_searchMode,
-      title: _searchMode ? _searchTextField() : const Text('EXPShare'),
+      title: _searchMode ? _searchTextField() : const Text('ExpShare'),
       actions: [
         WillPopScope(
           onWillPop: () async {
             if (_searchMode) {
               setState(() {
+                widget.forwardingSearchInput('');
                 _searchMode = false;
               });
+              return false;
             }
-            if (!_searchMode) {
-              widget.forwardingSearchInput('');
+
+            final difference = DateTime.now().difference(timeBackpressed);
+            final isExitWarning =
+                difference >= const Duration(milliseconds: 2000);
+
+            timeBackpressed = DateTime.now();
+
+            if (isExitWarning) {
+              Fluttertoast.showToast(
+                  gravity: ToastGravity.BOTTOM,
+                  msg: Provider.of<Experts>(context, listen: false).language ==
+                          Language.english
+                      ? 'Press back again to exit'
+                      : 'اضغط مرة أخرى للخروج',
+                  fontSize: 16,
+                  textColor: kPrimaryColor,
+                  backgroundColor: Colors.white);
+              return false;
             } else {
+              Fluttertoast.cancel();
               return true;
             }
-            return false;
           },
           child: IconButton(
               icon: Icon(_searchMode ? Icons.clear : Icons.search),

@@ -7,25 +7,11 @@ class WelcomeImage extends StatelessWidget {
   final String title;
   @override
   Widget build(BuildContext context) {
+    print(MediaQuery.of(context).size.height);
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Flexible(
-          child: Image.asset(
-            'assets/illustrations/illustration$index.png',
-          ),
-        ),
-        const SizedBox(
-          height: 40,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.titleLarge,
-            textAlign: TextAlign.center,
-          ),
-        )
+        
       ],
     );
   }

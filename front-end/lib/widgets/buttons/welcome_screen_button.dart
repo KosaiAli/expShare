@@ -5,34 +5,25 @@ class WelcomeScreenButton extends StatelessWidget {
   const WelcomeScreenButton(
       {super.key, required this.onPressed, required this.child});
   final VoidCallback onPressed;
-  final String child;
+  final Widget child;
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 50,
-      ),
-      child: GestureDetector(
-        onTap: onPressed,
-        child: Container(
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
           decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(35),
               boxShadow: [
                 BoxShadow(
-                    color: Theme.of(context).primaryColor.withOpacity(0.5),
+                    color: Theme.of(context).primaryColor.withOpacity(0.3),
                     blurRadius: 16,
                     offset: const Offset(0, 8))
               ]),
-          height: 50,
+          height: 60,
           width: double.infinity,
           alignment: Alignment.center,
-          child: Text(
-            child,
-            style: kButtonStyle,
-          ),
-        ),
-      ),
+          child: child),
     );
   }
 }

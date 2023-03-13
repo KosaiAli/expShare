@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Config {
-  static const host = '127.0.0.1:8001';
+  static const host = '127.0.0.1:8000';
 
   static const regisetApi = 'api/register';
   static const fillExpertInfoApi = 'api/expertData';
@@ -11,8 +11,7 @@ class Config {
   };
 
   static Future<Map<String, String>> getHeader() async {
-    var accessToken =
-        await const FlutterSecureStorage().read(key: 'access_token');
+    var accessToken = await const FlutterSecureStorage().read(key: 'token');
     return {
       'Content-type': 'application/json',
       'Accept': 'application/json',
